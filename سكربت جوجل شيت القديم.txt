@@ -1,0 +1,61 @@
+function doGet(e){return handle(e&&e.parameter?e.parameter:{});}
+function doPost(e){
+  var d={};try{d=JSON.parse(e.postData.contents||'{}');}catch(ex){return out({ok:false,msg:'bad json'});}
+  return handle(d);
+}
+function handle(d){
+  var action=String(d.action||'');
+  try{
+    if(action==='ping')    return out({ok:true,msg:'connected'});
+    if(action==='init')    return initSheets(d);
+    if(action==='save')    return saveRows(d);
+    if(action==='load')    return loadRows(d);
+    return out({ok:false,msg:'unknown action'});
+  }catch(e){return out({ok:false,msg:String(e)});}
+}
+function initSheets(d){
+  var ss=open(d.ssId);
+  ensure(ss,'البرامج',    ['id','الاسم','التصنيف','الفكرة','الميزانية','الاحتياجات','تاريخ الإنشاء']);
+  ensure(ss,'الجدول',     ['id','معرف_البرنامج','السنة','الشهر','اليوم','القسم','الجالية','معرف_الجهة','اسم_الجهة','المستهدفون','المحاضر','المنسق','الملاحظات','تاريخ الإنشاء']);
+  ensure(ss,'الجهات',     ['id','الاسم','الموقع','تاريخ الإنشاء']);
+  ensure(ss,'التصنيفات',  ['النوع','القيمة']);
+  ensure(ss,'الإعدادات',  ['مفتاح','قيمة']);
+  var cfg=ss.getSheetByName('الإعدادات');
+  cfg.clearContents();
+  cfg.appendRow(['مفتاح','قيمة']);
+  cfg.appendRow(['ssId',d.ssId]);
+  cfg.appendRow(['version','1.0']);
+  seedLookups(ss);
+  return out({ok:true,msg:'تم إنشاء التبويبات بنجاح'});
+}
+function saveRows(d){
+  var ss=open(d.ssId);
+  var sheet=ensure(ss,d.sheet,null);
+  (d.rows||[]).forEach(function(r){sheet.appendRow(r);});
+  return out({ok:true,count:(d.rows||[]).length});
+}
+function loadRows(d){
+  var ss=open(d.ssId);
+  var sheet=ss.getSheetByName(d.sheet);
+  if(!sheet)return out({ok:true,rows:[]});
+  var vals=sheet.getDataRange().getValues();
+  return out({ok:true,rows:vals});
+}
+function open(id){return SpreadsheetApp.openById(id);}
+function ensure(ss,name,headers){
+  var sh=ss.getSheetByName(name);
+  if(!sh){sh=ss.insertSheet(name);}
+  if(headers&&sh.getLastRow()===0){sh.appendRow(headers);}
+  return sh;
+}
+function seedLookups(ss){
+  var sh=ensure(ss,'التصنيفات',['النوع','القيمة']);
+  if(sh.getLastRow()>1)return;
+  [['جالية','الفلبينية'],['جالية','البنغالية'],['جالية','الأوردية'],
+   ['تصنيف','دعوي'],['تصنيف','ثقافي'],['وحدة','كيلو'],['وحدة','كرتون'],
+   ['قسم','القسم النسائي'],['قسم','القسم الدعوي'],['قسم','قسم الجاليات']
+  ].forEach(function(r){sh.appendRow(r);});
+}
+function out(obj){
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
