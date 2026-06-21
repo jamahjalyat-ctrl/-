@@ -969,8 +969,19 @@ if(elements.importInput) elements.importInput.addEventListener('change', e => {
   };
   reader.readAsText(file);
 });
-if(elements.resetDbBtn) elements.resetDbBtn.addEventListener('click', () => {
-  if(!confirm('مسح كل البيانات بشكل نهائي؟')) return;
+if(elements.resetDbBtn) elements.resetDbBtn.addEventListener('click', async () => {
+  if(!confirm('⚠️ مسح كل البيانات بشكل نهائي؟ سيتم مسح كل البرامج والجداول من التطبيق وجوجل شيت.')) return;
+  if(!confirm('تأكيد نهائي؟ لا يمكن التراجع.')) return;
+  const url = state.googleSheets?.webAppUrl;
+  const ssId = state.googleSheets?.ssId;
+  if(url && ssId) {
+    try {
+      await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'البرامج', headers: ['id','الاسم','التصنيف','الفكرة','الميزانية','الاحتياجات','تاريخ الإنشاء'], rows: [] }) });
+      await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'الجدول', headers: ['id','معرف_البرنامج','السنة','الشهر','اليوم','القسم','الجالية','معرف_الجهة','اسم_الجهة','المستهدفون','المحاضر','المنسق','الملاحظات','تاريخ الإنشاء'], rows: [] }) });
+      await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'المجمع', headers: COMBINED_HEADERS, rows: [] }) });
+      await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveState', ssId, json: '{}' }) });
+    } catch(e) { console.warn('reset GS:', e); }
+  }
   localStorage.removeItem(STORAGE_KEY);
   location.reload();
 });
