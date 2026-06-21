@@ -1446,10 +1446,10 @@ if(elements.nmRefreshBtn) elements.nmRefreshBtn.addEventListener('click', async 
       state = gsState;
       persist();
       initNeedsMonitorFilters();
-      renderNeedsMonitor();
+      refreshAll();
       appendLog('✅ تم التحديث من Google Sheets');
       alert('✅ تم تحديث البيانات من Google Sheets');
-    } else { alert('⚠️ تعذر التحميل'); }
+    } else { alert('⚠️ تعذر التحميل — لا توجد بيانات في التبويبات'); }
   } catch(e) { alert('❌ خطأ: ' + e.toString()); }
   elements.nmRefreshBtn.textContent = '🔄 تحديث من Google Sheets';
   elements.nmRefreshBtn.disabled = false;
@@ -1671,45 +1671,18 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     if(pageId === 'needsMonitor') { initNeedsMonitorFilters(); renderNeedsMonitor(); }
   });
 });
-// بدء التطبيق
+// بدء التطبيق — ما يقرأ من GS تلقائياً، فقط يدوي
 (async function initApp() {
   populateScheduleYearMonth();
   buildMonthBar();
-  try {
-    if(state.googleSheets?.webAppUrl && state.googleSheets?.ssId) {
-      appendLog('🔄 جاري تحميل البيانات من Google Sheets...');
-      const gsState = await loadAllFromGs();
-      if(gsState) {
-        gsState.googleSheets = state.googleSheets;
-        state = gsState;
-        persist();
-        appendLog('✅ تم التحميل من تبويبات Google Sheets');
-      } else {
-        appendLog('⚠️ لا توجد بيانات في التبويبات، تجربة JSON...');
-        const jsonState = await loadStateFromGs();
-        if(jsonState) {
-          const gsSettings = state.googleSheets;
-          const lookups = await loadLookupsFromGs();
-          state = jsonState;
-          state.googleSheets = gsSettings;
-          if(lookups.communities?.length) state.communities = lookups.communities;
-          if(lookups.categories?.length) state.categories = lookups.categories;
-          if(lookups.units?.length) state.units = lookups.units;
-          if(lookups.sections?.length) state.sections = lookups.sections;
-          if(lookups.companies?.length) state.companies = lookups.companies;
-          persist();
-          appendLog('✅ تم تحميل البيانات من Google Sheets (JSON)');
-        } else {
-          appendLog('⚠️ لا توجد بيانات في Google Sheets، استخدام البيانات المحلية');
-        }
-      }
-    }
-  } catch(e) { console.warn('initApp load:', e); }
   initNeedsMonitorFilters();
   refreshAll();
   initPrintPage();
-  autoInitAndSync();
-  setInterval(autoInitAndSync, 300000);
+  if(state.googleSheets?.webAppUrl && state.googleSheets?.ssId) {
+    appendLog('🔄 مزامنة احتياطية إلى Google Sheets...');
+    autoInitAndSync();
+    setInterval(autoInitAndSync, 300000);
+  }
 })();
 </script>
 </body>
