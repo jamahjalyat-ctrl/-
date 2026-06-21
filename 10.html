@@ -277,7 +277,7 @@ th{background:#f7faff;color:#334155;font-weight:800}
     <div id="yearlyView" style="display:none"><div class="card"><div class="section-title"><h3>التقويم السنوي</h3><span class="pill" id="yearPill"></span></div><div id="yearGrid" class="year-grid"></div></div></div>
   </section>
   <section id="reports" class="page"><div class="card"><div class="section-title"><h3>الكشف والتصفية</h3></div><div class="search-row"><div><label>النطاق</label><select id="reportRangeFilter"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select></div><div><label>بحث</label><input id="searchInput" placeholder="اسم برنامج، جالية، محاضر..."/></div><div><label>الجالية</label><select id="reportCommunityFilter"></select></div><div><label>الجهة</label><select id="reportCompanyFilter"></select></div></div><div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>البرنامج</th><th>القسم</th><th>الجالية</th><th>الجهة</th><th>مستهدفون</th><th>المحاضر/المنسق</th><th>الميزانية</th></tr></thead><tbody id="reportTableBody"></tbody></table></div></div></section>
-  <section id="needsMonitor" class="page"><div class="hero"><h2>📦 رصد الاحتياجات</h2><p>جدول تفصيلي وإجماليات لكل احتياجات البرامج حسب التصنيفات والمدة.</p></div><div class="card"><div class="grid-4"><div><label>السنة</label><select id="nmYear"></select></div><div><label>الشهر</label><select id="nmMonth"><option value="-1">الكل</option></select></div><div><label>القسم</label><select id="nmSection"><option value="">الكل</option></select></div><div><label>الجالية</label><select id="nmCommunity"><option value="">الكل</option></select></div></div><div class="grid-3"><div><label>تصنيف البرنامج</label><select id="nmCategory"><option value="">الكل</option></select></div><div><label>نوع الاحتياج</label><select id="nmNeedType"><option value="">الكل</option><option>مالي</option><option>عيني</option><option>عيني ومالي</option></select></div><div><label>بحث</label><input id="nmSearch" placeholder="اسم برنامج، احتياج..."/></div></div></div><div class="stats" id="nmStats"><div class="stat"><small>عدد الاحتياجات</small><strong id="nmCount">0</strong></div><div class="stat"><small>إجمالي الكميات</small><strong id="nmQtyTotal">0</strong></div><div class="stat"><small>إجمالي التكلفة</small><strong id="nmCostTotal">0 ريال</strong></div><div class="stat"><small>عدد البرامج</small><strong id="nmProgCount">0</strong></div></div><div class="card"><div class="section-title"><h3>جدول الاحتياجات التفصيلي</h3><span class="pill" id="nmTableCount">0 صف</span></div><div class="table-wrap" style="max-height:500px;overflow:auto"><table><thead><tr><th>البرنامج</th><th>التاريخ</th><th>القسم</th><th>الجالية</th><th>الاحتياج</th><th>النوع</th><th>الكمية</th><th>الوحدة</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody id="nmTableBody"></tbody></table></div></div><div class="card"><h3>توزيع الاحتياجات — شهري</h3><div class="table-wrap"><table><thead><tr><th>الشهر</th><th>عدد الاحتياجات</th><th>إجمالي التكلفة</th></tr></thead><tbody id="nmMonthlyBody"></tbody></table></div></div></section>
+  <section id="needsMonitor" class="page"><div class="hero"><h2>📦 رصد الاحتياجات</h2><p>جدول تفصيلي وإجماليات لكل احتياجات البرامج حسب التصنيفات والمدة.</p><button class="btn btn-accent" id="nmRefreshBtn" style="margin-top:12px">🔄 تحديث من Google Sheets</button></div><div class="card"><div class="grid-4"><div><label>السنة</label><select id="nmYear"></select></div><div><label>الشهر</label><select id="nmMonth"><option value="-1">الكل</option></select></div><div><label>القسم</label><select id="nmSection"><option value="">الكل</option></select></div><div><label>الجالية</label><select id="nmCommunity"><option value="">الكل</option></select></div></div><div class="grid-3"><div><label>تصنيف البرنامج</label><select id="nmCategory"><option value="">الكل</option></select></div><div><label>نوع الاحتياج</label><select id="nmNeedType"><option value="">الكل</option><option>مالي</option><option>عيني</option><option>عيني ومالي</option></select></div><div><label>بحث</label><input id="nmSearch" placeholder="اسم برنامج، احتياج..."/></div></div></div><div class="stats" id="nmStats"><div class="stat"><small>عدد الاحتياجات</small><strong id="nmCount">0</strong></div><div class="stat"><small>إجمالي الكميات</small><strong id="nmQtyTotal">0</strong></div><div class="stat"><small>إجمالي التكلفة</small><strong id="nmCostTotal">0 ريال</strong></div><div class="stat"><small>عدد البرامج</small><strong id="nmProgCount">0</strong></div></div><div class="card"><div class="section-title"><h3>جدول الاحتياجات التفصيلي</h3><span class="pill" id="nmTableCount">0 صف</span></div><div class="table-wrap" style="max-height:500px;overflow:auto"><table><thead><tr><th>البرنامج</th><th>التاريخ</th><th>القسم</th><th>الجالية</th><th>الاحتياج</th><th>النوع</th><th>الكمية</th><th>الوحدة</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody id="nmTableBody"></tbody></table></div></div><div class="card"><h3>توزيع الاحتياجات — شهري</h3><div class="table-wrap"><table><thead><tr><th>الشهر</th><th>عدد الاحتياجات</th><th>إجمالي التكلفة</th></tr></thead><tbody id="nmMonthlyBody"></tbody></table></div></div></section>
   <section id="googleSheet" class="page"><div class="hero"><h2>🔗 الربط مع Google Sheets</h2><p>في ثلاث خطوات فقط: الصق رابط الشيت، الصق كود السكربت، ثم اضغط تهيئة وربط.</p></div><div id="gsStatusBar" class="gs-status-bar disconnected"><div class="gs-dot orange"></div><span id="gsStatusText">غير متصل</span></div><div class="card"><h3>الخطوة 1 — أدخل رابط Google Sheet</h3><input id="gsSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/XXXX/edit" value="https://docs.google.com/spreadsheets/d/1_ZW7JDP60cFdTw2RsIBAsQg3oNkkTWTEejRjMOwUk_o/edit"/><div style="margin-top:14px"><h3>الخطوة 2 — افتح Apps Script والصق هذا الكود</h3><div class="gs-code" id="appsScriptCode">function doGet(e) {
   return handle(e && e.parameter ? e.parameter : {});
 }
@@ -477,7 +477,7 @@ const elements = {
   nmYear: $('nmYear'), nmMonth: $('nmMonth'), nmSection: $('nmSection'), nmCommunity: $('nmCommunity'),
   nmCategory: $('nmCategory'), nmNeedType: $('nmNeedType'), nmSearch: $('nmSearch'),
   nmCount: $('nmCount'), nmQtyTotal: $('nmQtyTotal'), nmCostTotal: $('nmCostTotal'), nmProgCount: $('nmProgCount'),
-  nmTableBody: $('nmTableBody'), nmTableCount: $('nmTableCount'), nmMonthlyBody: $('nmMonthlyBody'),
+  nmTableBody: $('nmTableBody'), nmTableCount: $('nmTableCount'), nmMonthlyBody: $('nmMonthlyBody'), nmRefreshBtn: $('nmRefreshBtn'),
   main: document.querySelector('.main')
 };
 
@@ -1424,6 +1424,25 @@ nmFilterIds.forEach(id => {
 });
 const nmSearchEl = document.getElementById('nmSearch');
 if(nmSearchEl) nmSearchEl.addEventListener('input', renderNeedsMonitor);
+if(elements.nmRefreshBtn) elements.nmRefreshBtn.addEventListener('click', async () => {
+  if(!state.googleSheets?.webAppUrl || !state.googleSheets?.ssId) return alert('الربط مع GS غير مفعل');
+  elements.nmRefreshBtn.textContent = '🔄 جاري التحديث...';
+  elements.nmRefreshBtn.disabled = true;
+  try {
+    const gsState = await loadAllFromGs();
+    if(gsState) {
+      gsState.googleSheets = state.googleSheets;
+      state = gsState;
+      persist();
+      initNeedsMonitorFilters();
+      renderNeedsMonitor();
+      appendLog('✅ تم التحديث من Google Sheets');
+      alert('✅ تم تحديث البيانات من Google Sheets');
+    } else { alert('⚠️ تعذر التحميل'); }
+  } catch(e) { alert('❌ خطأ: ' + e.toString()); }
+  elements.nmRefreshBtn.textContent = '🔄 تحديث من Google Sheets';
+  elements.nmRefreshBtn.disabled = false;
+});
 
 // ------------------- تحديث جميع الواجهات -------------------
 function refreshSelectors() {
@@ -1521,6 +1540,84 @@ async function loadLookupsFromGs() {
   return {};
 }
 
+// ------------------- تحميل كامل من تبويبات GS (قاعدة بيانات) -------------------
+async function loadAllFromGs() {
+  const url = state.googleSheets.webAppUrl;
+  const ssId = state.googleSheets.ssId;
+  if(!url || !ssId) return null;
+  try {
+    const [progRes, schedRes, compRes, commRes, unitRes, secRes, catRes] = await Promise.all([
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'البرامج' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الجدول' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الجهات' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الجاليات' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الوحدات' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الأقسام' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'التصنيفات' }) })
+    ]);
+    const programs = await progRes.json();
+    const schedules = await schedRes.json();
+    const companies = await compRes.json();
+    const communities = await commRes.json();
+    const units = await unitRes.json();
+    const sections = await secRes.json();
+    const categories = await catRes.json();
+
+    const newState = {
+      communities: communities.ok ? communities.rows.slice(1).map(r => r[0]).filter(Boolean) : state.communities,
+      categories: categories.ok ? categories.rows.slice(1).filter(r => r[0] === 'تصنيف').map(r => r[1]).filter(Boolean) : state.categories,
+      units: units.ok ? units.rows.slice(1).map(r => r[0]).filter(Boolean) : state.units,
+      sections: sections.ok ? sections.rows.slice(1).map(r => r[0]).filter(Boolean) : state.sections,
+      companies: companies.ok ? companies.rows.slice(1).map(r => ({id: r[0]||uid(), name: r[1]||'', location: r[2]||''})).filter(c => c.name) : state.companies,
+      programs: [],
+      schedules: [],
+      googleSheets: state.googleSheets
+    };
+
+    if(programs.ok && programs.rows.length > 1) {
+      const headers = programs.rows[0];
+      const idxId = 0, idxName = 1, idxCat = 2, idxIdea = 3, idxBudget = 4, idxNeeds = 5;
+      for(let i = 1; i < programs.rows.length; i++) {
+        const r = programs.rows[i];
+        if(!r[idxName]) continue;
+        let needs = [];
+        try { needs = JSON.parse(r[idxNeeds] || '[]'); } catch(e) { needs = []; }
+        newState.programs.push({
+          id: r[idxId] || uid(),
+          name: r[idxName] || '',
+          category: r[idxCat] || '',
+          idea: r[idxIdea] || '',
+          totalCost: parseFloat(r[idxBudget]) || 0,
+          needs: needs.map(n => ({
+            id: n.id || uid(), item: n.item || n.name || '', type: n.type || 'مالي',
+            qty: n.qty || 1, unit: n.unit || '', price: n.price || 0
+          }))
+        });
+      }
+    }
+
+    if(schedules.ok && schedules.rows.length > 1) {
+      const h = schedules.rows[0];
+      const idxId = 0, idxProgId = 1, idxYear = 2, idxMonth = 3, idxDay = 4,
+            idxSec = 5, idxComm = 6, idxCompId = 7, idxCompName = 8,
+            idxTarget = 9, idxLect = 10, idxCoord = 11, idxNotes = 12;
+      for(let i = 1; i < schedules.rows.length; i++) {
+        const r = schedules.rows[i];
+        if(!r[idxProgId]) continue;
+        newState.schedules.push({
+          id: r[idxId] || uid(), programId: r[idxProgId] || '',
+          year: parseInt(r[idxYear]) || 2026, month: parseInt(r[idxMonth])-1 || 0, day: parseInt(r[idxDay]) || 1,
+          section: r[idxSec] || '', community: r[idxComm] || '', companyId: r[idxCompId] || '',
+          targetCount: parseInt(r[idxTarget]) || 0,
+          lecturer: r[idxLect] || '', coordinator: r[idxCoord] || '', notes: r[idxNotes] || ''
+        });
+      }
+    }
+
+    return newState;
+  } catch(e) { console.warn('loadAllFromGs:', e); return null; }
+}
+
 // ------------------- الاتصال التلقائي بـ Google Sheets -------------------
 async function autoInitAndSync() {
   const url = state.googleSheets.webAppUrl;
@@ -1570,21 +1667,30 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
   try {
     if(state.googleSheets?.webAppUrl && state.googleSheets?.ssId) {
       appendLog('🔄 جاري تحميل البيانات من Google Sheets...');
-      const gsState = await loadStateFromGs();
+      const gsState = await loadAllFromGs();
       if(gsState) {
-        const gsSettings = state.googleSheets;
-        const lookups = await loadLookupsFromGs();
+        gsState.googleSheets = state.googleSheets;
         state = gsState;
-        state.googleSheets = gsSettings;
-        if(lookups.communities?.length) state.communities = lookups.communities;
-        if(lookups.categories?.length) state.categories = lookups.categories;
-        if(lookups.units?.length) state.units = lookups.units;
-        if(lookups.sections?.length) state.sections = lookups.sections;
-        if(lookups.companies?.length) state.companies = lookups.companies;
         persist();
-        appendLog('✅ تم تحميل البيانات من Google Sheets');
+        appendLog('✅ تم التحميل من تبويبات Google Sheets');
       } else {
-        appendLog('⚠️ لا توجد بيانات في Google Sheets، استخدام البيانات المحلية');
+        appendLog('⚠️ لا توجد بيانات في التبويبات، تجربة JSON...');
+        const jsonState = await loadStateFromGs();
+        if(jsonState) {
+          const gsSettings = state.googleSheets;
+          const lookups = await loadLookupsFromGs();
+          state = jsonState;
+          state.googleSheets = gsSettings;
+          if(lookups.communities?.length) state.communities = lookups.communities;
+          if(lookups.categories?.length) state.categories = lookups.categories;
+          if(lookups.units?.length) state.units = lookups.units;
+          if(lookups.sections?.length) state.sections = lookups.sections;
+          if(lookups.companies?.length) state.companies = lookups.companies;
+          persist();
+          appendLog('✅ تم تحميل البيانات من Google Sheets (JSON)');
+        } else {
+          appendLog('⚠️ لا توجد بيانات في Google Sheets، استخدام البيانات المحلية');
+        }
       }
     }
   } catch(e) { console.warn('initApp load:', e); }
