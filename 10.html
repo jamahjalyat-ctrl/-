@@ -236,6 +236,7 @@ th{background:#f7faff;color:#334155;font-weight:800}
   <button class="nav-btn" data-page="programs" ><span class="nav-icon">📋</span>تعريف البرامج</button>
   <button class="nav-btn" data-page="schedule" ><span class="nav-icon">📅</span>الجدول الشهري والسنوي</button>
   <button class="nav-btn" data-page="reports" ><span class="nav-icon">📊</span>الكشف والتصفية</button>
+  <button class="nav-btn" data-page="needsMonitor" ><span class="nav-icon">📦</span>رصد الاحتياجات</button>
   <button class="nav-btn" data-page="googleSheet" ><span class="nav-icon">🔗</span>الربط مع Google Sheets</button>
   <button class="nav-btn" data-page="settings" ><span class="nav-icon">⚙️</span>التصنيفات الرئيسية</button>
   <button class="nav-btn" data-page="print" ><span class="nav-icon">🖨️</span>الطباعة</button>
@@ -276,6 +277,7 @@ th{background:#f7faff;color:#334155;font-weight:800}
     <div id="yearlyView" style="display:none"><div class="card"><div class="section-title"><h3>التقويم السنوي</h3><span class="pill" id="yearPill"></span></div><div id="yearGrid" class="year-grid"></div></div></div>
   </section>
   <section id="reports" class="page"><div class="card"><div class="section-title"><h3>الكشف والتصفية</h3></div><div class="search-row"><div><label>النطاق</label><select id="reportRangeFilter"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select></div><div><label>بحث</label><input id="searchInput" placeholder="اسم برنامج، جالية، محاضر..."/></div><div><label>الجالية</label><select id="reportCommunityFilter"></select></div><div><label>الجهة</label><select id="reportCompanyFilter"></select></div></div><div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>البرنامج</th><th>القسم</th><th>الجالية</th><th>الجهة</th><th>مستهدفون</th><th>المحاضر/المنسق</th><th>الميزانية</th></tr></thead><tbody id="reportTableBody"></tbody></table></div></div></section>
+  <section id="needsMonitor" class="page"><div class="hero"><h2>📦 رصد الاحتياجات</h2><p>جدول تفصيلي وإجماليات لكل احتياجات البرامج حسب التصنيفات والمدة.</p></div><div class="card"><div class="grid-4"><div><label>السنة</label><select id="nmYear"></select></div><div><label>الشهر</label><select id="nmMonth"><option value="-1">الكل</option></select></div><div><label>القسم</label><select id="nmSection"><option value="">الكل</option></select></div><div><label>الجالية</label><select id="nmCommunity"><option value="">الكل</option></select></div></div><div class="grid-3"><div><label>تصنيف البرنامج</label><select id="nmCategory"><option value="">الكل</option></select></div><div><label>نوع الاحتياج</label><select id="nmNeedType"><option value="">الكل</option><option>مالي</option><option>عيني</option><option>عيني ومالي</option></select></div><div><label>بحث</label><input id="nmSearch" placeholder="اسم برنامج، احتياج..."/></div></div></div><div class="stats" id="nmStats"><div class="stat"><small>عدد الاحتياجات</small><strong id="nmCount">0</strong></div><div class="stat"><small>إجمالي الكميات</small><strong id="nmQtyTotal">0</strong></div><div class="stat"><small>إجمالي التكلفة</small><strong id="nmCostTotal">0 ريال</strong></div><div class="stat"><small>عدد البرامج</small><strong id="nmProgCount">0</strong></div></div><div class="card"><div class="section-title"><h3>جدول الاحتياجات التفصيلي</h3><span class="pill" id="nmTableCount">0 صف</span></div><div class="table-wrap" style="max-height:500px;overflow:auto"><table><thead><tr><th>البرنامج</th><th>التاريخ</th><th>القسم</th><th>الجالية</th><th>الاحتياج</th><th>النوع</th><th>الكمية</th><th>الوحدة</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody id="nmTableBody"></tbody></table></div></div><div class="card"><h3>توزيع الاحتياجات — شهري</h3><div class="table-wrap"><table><thead><tr><th>الشهر</th><th>عدد الاحتياجات</th><th>إجمالي التكلفة</th></tr></thead><tbody id="nmMonthlyBody"></tbody></table></div></div></section>
   <section id="googleSheet" class="page"><div class="hero"><h2>🔗 الربط مع Google Sheets</h2><p>في ثلاث خطوات فقط: الصق رابط الشيت، الصق كود السكربت، ثم اضغط تهيئة وربط.</p></div><div id="gsStatusBar" class="gs-status-bar disconnected"><div class="gs-dot orange"></div><span id="gsStatusText">غير متصل</span></div><div class="card"><h3>الخطوة 1 — أدخل رابط Google Sheet</h3><input id="gsSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/XXXX/edit" value="https://docs.google.com/spreadsheets/d/1_ZW7JDP60cFdTw2RsIBAsQg3oNkkTWTEejRjMOwUk_o/edit"/><div style="margin-top:14px"><h3>الخطوة 2 — افتح Apps Script والصق هذا الكود</h3><div class="gs-code" id="appsScriptCode">function doGet(e) {
   return handle(e && e.parameter ? e.parameter : {});
 }
@@ -472,6 +474,10 @@ const elements = {
   excelUploadInput: $('excelUploadInput'), downloadTemplateBtn: $('downloadTemplateBtn'),
   importPreviewArea: $('importPreviewArea'), importPreviewTable: $('importPreviewTable'), importCount: $('importCount'),
   confirmImportBtn: $('confirmImportBtn'), cancelImportBtn: $('cancelImportBtn'),
+  nmYear: $('nmYear'), nmMonth: $('nmMonth'), nmSection: $('nmSection'), nmCommunity: $('nmCommunity'),
+  nmCategory: $('nmCategory'), nmNeedType: $('nmNeedType'), nmSearch: $('nmSearch'),
+  nmCount: $('nmCount'), nmQtyTotal: $('nmQtyTotal'), nmCostTotal: $('nmCostTotal'), nmProgCount: $('nmProgCount'),
+  nmTableBody: $('nmTableBody'), nmTableCount: $('nmTableCount'), nmMonthlyBody: $('nmMonthlyBody'),
   main: document.querySelector('.main')
 };
 
@@ -1331,6 +1337,94 @@ window.excludeProgram = function(progId) {
   rerenderPrintTemplate();
 };
 
+// ------------------- رصد الاحتياجات -------------------
+function renderNeedsMonitor() {
+  if(!elements.nmTableBody) return;
+  const year = parseInt(elements.nmYear?.value) || activeYear;
+  const month = parseInt(elements.nmMonth?.value) ?? -1;
+  const section = elements.nmSection?.value || '';
+  const community = elements.nmCommunity?.value || '';
+  const category = elements.nmCategory?.value || '';
+  const needType = elements.nmNeedType?.value || '';
+  const search = (elements.nmSearch?.value || '').trim().toLowerCase();
+
+  let rows = [];
+  state.schedules.filter(s => s.year === year).forEach(s => {
+    if(month >= 0 && s.month !== month) return;
+    if(section && s.section !== section) return;
+    if(community && s.community !== community) return;
+    const p = state.programs.find(x => x.id === s.programId) || {};
+    if(category && p.category !== category) return;
+    if(p.category === undefined) return;
+    const c = state.companies.find(x => x.id === s.companyId) || {};
+    const needs = p.needs || [];
+    if(!needs.length) return;
+    needs.forEach(n => {
+      if(needType && n.type !== needType) return;
+      if(search && !p.name?.toLowerCase().includes(search) && !n.item?.toLowerCase().includes(search)) return;
+      rows.push({
+        program: p.name||'', date: `${s.day}/${s.month+1}/${s.year}`,
+        section: s.section||'', community: s.community||'',
+        need: n.item||'', type: n.type||'', qty: n.qty||0,
+        unit: n.unit||'', price: n.price||0,
+        total: (n.price * n.qty)||0, month: s.month
+      });
+    });
+  });
+
+  const totalNeeds = rows.length;
+  const totalQty = rows.reduce((s, r) => s + Number(r.qty), 0);
+  const totalCost = rows.reduce((s, r) => s + Number(r.total), 0);
+  const progSet = new Set(rows.map(r => r.program));
+  if(elements.nmCount) elements.nmCount.textContent = fmt(totalNeeds);
+  if(elements.nmQtyTotal) elements.nmQtyTotal.textContent = fmt(totalQty);
+  if(elements.nmCostTotal) elements.nmCostTotal.textContent = fmt(totalCost) + ' ريال';
+  if(elements.nmProgCount) elements.nmProgCount.textContent = fmt(progSet.size);
+
+  if(elements.nmTableBody) {
+    elements.nmTableBody.innerHTML = rows.map(r =>
+      `<tr><td>${esc(r.program)}</td><td>${esc(r.date)}</td><td>${esc(r.section)}</td><td>${esc(r.community)}</td><td>${esc(r.need)}</td><td>${esc(r.type)}</td><td>${fmt(r.qty)}</td><td>${esc(r.unit)}</td><td>${fmt(r.price)}</td><td>${fmt(r.total)}</td></tr>`
+    ).join('') || '<tr><td colspan="10">لا توجد احتياجات</td></tr>';
+    if(elements.nmTableCount) elements.nmTableCount.textContent = fmt(totalNeeds) + ' صف';
+  }
+
+  if(elements.nmMonthlyBody) {
+    const monthly = {};
+    rows.forEach(r => { const m = r.month; monthly[m] = monthly[m] || { count: 0, cost: 0 }; monthly[m].count++; monthly[m].cost += Number(r.total); });
+    elements.nmMonthlyBody.innerHTML = MONTHS_AR.map((m, i) => {
+      const d = monthly[i];
+      return `<tr><td>${m}</td><td>${fmt(d?.count||0)}</td><td>${fmt(d?.cost||0)} ريال</td></tr>`;
+    }).join('');
+  }
+}
+function initNeedsMonitorFilters() {
+  if(!elements.nmYear) return;
+  if(elements.nmYear) {
+    const y = parseInt(elements.nmYear.value) || activeYear;
+    elements.nmYear.innerHTML = '';
+    for(let i = 2025; i <= 2035; i++) {
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = i;
+      if(i === y) opt.selected = true;
+      elements.nmYear.appendChild(opt);
+    }
+  }
+  if(elements.nmMonth) {
+    const cur = elements.nmMonth.value;
+    elements.nmMonth.innerHTML = '<option value="-1">الكل</option>' + MONTHS_AR.map((m,i) => `<option value="${i}" ${i===activeMonth ? 'selected' : ''}>${m}</option>`).join('');
+  }
+  if(elements.nmSection) elements.nmSection.innerHTML = '<option value="">الكل</option>' + state.sections.map(s => `<option value="${escA(s)}">${esc(s)}</option>`).join('');
+  if(elements.nmCommunity) elements.nmCommunity.innerHTML = '<option value="">الكل</option>' + state.communities.map(c => `<option value="${escA(c)}">${esc(c)}</option>`).join('');
+  if(elements.nmCategory) elements.nmCategory.innerHTML = '<option value="">الكل</option>' + state.categories.map(c => `<option value="${escA(c)}">${esc(c)}</option>`).join('');
+}
+const nmFilterIds = ['nmYear','nmMonth','nmSection','nmCommunity','nmCategory','nmNeedType','nmSearch'];
+nmFilterIds.forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('change', renderNeedsMonitor);
+});
+const nmSearchEl = document.getElementById('nmSearch');
+if(nmSearchEl) nmSearchEl.addEventListener('input', renderNeedsMonitor);
+
 // ------------------- تحديث جميع الواجهات -------------------
 function refreshSelectors() {
   if(!elements.progCategory) return;
@@ -1357,6 +1451,7 @@ function refreshAll() {
   renderDashboard();
   renderReportTable();
   renderSettings();
+  renderNeedsMonitor();
   if(elements.printMonthSelect && elements.printMonthSelect.children.length === 0) initPrintPage();
   else if(currentPrintTemplate) rerenderPrintTemplate();
 }
@@ -1465,6 +1560,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     if(pageElem) pageElem.classList.add('active');
     if(pageId === 'googleSheet') renderGsPage();
     if(pageId === 'print') initPrintPage();
+    if(pageId === 'needsMonitor') { initNeedsMonitorFilters(); renderNeedsMonitor(); }
   });
 });
 // بدء التطبيق
@@ -1492,6 +1588,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
       }
     }
   } catch(e) { console.warn('initApp load:', e); }
+  initNeedsMonitorFilters();
   refreshAll();
   initPrintPage();
   autoInitAndSync();
