@@ -304,7 +304,10 @@ function initSheets(d) {
   ensure(ss, 'البرامج', ['id', 'الاسم', 'التصنيف', 'الفكرة', 'الميزانية', 'الاحتياجات', 'تاريخ الإنشاء']);
   ensure(ss, 'الجدول', ['id', 'معرف_البرنامج', 'السنة', 'الشهر', 'اليوم', 'القسم', 'الجالية', 'معرف_الجهة', 'اسم_الجهة', 'المستهدفون', 'المحاضر', 'المنسق', 'الملاحظات', 'تاريخ الإنشاء']);
   ensure(ss, 'الجهات', ['id', 'الاسم', 'الموقع', 'تاريخ الإنشاء']);
-  ensure(ss, 'التصنيفات', ['التصنيف', 'الجالية', 'الوحدة', 'القسم']);
+  ensure(ss, 'التصنيفات', ['الاسم']);
+  ensure(ss, 'الجاليات', ['الاسم']);
+  ensure(ss, 'الوحدات', ['الاسم']);
+  ensure(ss, 'الأقسام', ['الاسم']);
   ensure(ss, 'المجمع', ['معرف_التسكينة', 'البرنامج', 'تصنيف_البرنامج', 'فكرة_البرنامج', 'ميزانية_البرنامج', 'السنة', 'الشهر', 'اليوم', 'القسم', 'الجالية', 'الجهة', 'موقع_الجهة', 'المستهدفون', 'المحاضر', 'المنسق', 'ملاحظات', 'تاريخ_المزامنة']);
   ensure(ss, 'الإعدادات', ['مفتاح', 'قيمة']);
   ensure(ss, 'البيانات', ['المفتاح', 'القيمة']);
@@ -345,14 +348,14 @@ function ensure(ss, name, headers) {
   return sh;
 }
 function seedLookups(ss) {
-  var sh = ensure(ss, 'التصنيفات', ['التصنيف', 'الجالية', 'الوحدة', 'القسم']);
-  if (sh.getLastRow() <= 1) {
-    sh.appendRow(['دعوي', 'الفلبينية', 'كيلو', 'القسم النسائي']);
-    sh.appendRow(['ثقافي', 'البنغالية', 'كرتون', 'القسم الدعوي']);
-    sh.appendRow(['رياضي', 'الأوردية', 'حبة', 'قسم الجاليات']);
-    sh.appendRow(['اجتماعي', 'الصومالية', 'علبة', '']);
-    sh.appendRow(['', '', 'وجبة', '']);
-  }
+  var cats = ensure(ss, 'التصنيفات', ['الاسم']);
+  if (cats.getLastRow() <= 1) { ['دعوي','ثقافي','رياضي','اجتماعي'].forEach(function(v) { cats.appendRow([v]); }); }
+  var comm = ensure(ss, 'الجاليات', ['الاسم']);
+  if (comm.getLastRow() <= 1) { ['الفلبينية','البنغالية','الأوردية','الصومالية'].forEach(function(v) { comm.appendRow([v]); }); }
+  var units = ensure(ss, 'الوحدات', ['الاسم']);
+  if (units.getLastRow() <= 1) { ['كيلو','كرتون','حبة','علبة','وجبة'].forEach(function(v) { units.appendRow([v]); }); }
+  var secs = ensure(ss, 'الأقسام', ['الاسم']);
+  if (secs.getLastRow() <= 1) { ['القسم النسائي','القسم الدعوي','قسم الجاليات'].forEach(function(v) { secs.appendRow([v]); }); }
 }
 function saveState(d) {
   var ss = open(d.ssId);
@@ -1506,12 +1509,14 @@ async function syncLookupsToGs() {
   const ssId = state.googleSheets.ssId;
   if(!url || !ssId) return;
   try {
-    const maxLen = Math.max(state.categories.length, state.communities.length, state.units.length, state.sections.length);
-    const rows = [];
-    for(let i = 0; i < maxLen; i++) {
-      rows.push([state.categories[i] || '', state.communities[i] || '', state.units[i] || '', state.sections[i] || '']);
-    }
-    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'التصنيفات', headers: ['التصنيف', 'الجالية', 'الوحدة', 'القسم'], rows: rows }) });
+    const catRows = state.categories.map(c => [c]);
+    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'التصنيفات', headers: ['الاسم'], rows: catRows }) });
+    const commRows = state.communities.map(c => [c]);
+    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'الجاليات', headers: ['الاسم'], rows: commRows }) });
+    const unitRows = state.units.map(u => [u]);
+    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'الوحدات', headers: ['الاسم'], rows: unitRows }) });
+    const secRows = state.sections.map(s => [s]);
+    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'الأقسام', headers: ['الاسم'], rows: secRows }) });
     const compRows = state.companies.map(c => [c.id, c.name, c.location || '']);
     await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'الجهات', headers: ['id','الاسم','الموقع'], rows: compRows }) });
   } catch(e) { console.warn('syncLookupsToGs:', e); }
@@ -1521,22 +1526,25 @@ async function loadLookupsFromGs() {
   const ssId = state.googleSheets.ssId;
   if(!url || !ssId) return {};
   try {
-    const [catRes, compRes] = await Promise.all([
+    const [commRes, unitRes, secRes, catRes, compRes] = await Promise.all([
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الجاليات' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الوحدات' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الأقسام' }) }),
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'التصنيفات' }) }),
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الجهات' }) })
     ]);
+    const comm = await commRes.json();
+    const unit = await unitRes.json();
+    const sec = await secRes.json();
     const cat = await catRes.json();
     const comp = await compRes.json();
-    const result = { communities: null, units: null, sections: null, categories: null, companies: null };
-    if(cat.ok && cat.rows.length > 1) {
-      const data = cat.rows.slice(1);
-      result.categories = data.map(r => r[0]).filter(Boolean);
-      result.communities = data.map(r => r[1]).filter(Boolean);
-      result.units = data.map(r => r[2]).filter(Boolean);
-      result.sections = data.map(r => r[3]).filter(Boolean);
-    }
-    result.companies = comp.ok ? comp.rows.slice(1).map(r => ({id: r[0], name: r[1], location: r[2] || ''})).filter(c => c.id && c.name) : null;
-    return result;
+    return {
+      communities: comm.ok ? comm.rows.slice(1).map(r => r[0]).filter(Boolean) : null,
+      units: unit.ok ? unit.rows.slice(1).map(r => r[0]).filter(Boolean) : null,
+      sections: sec.ok ? sec.rows.slice(1).map(r => r[0]).filter(Boolean) : null,
+      categories: cat.ok ? cat.rows.slice(1).map(r => r[0]).filter(Boolean) : null,
+      companies: comp.ok ? comp.rows.slice(1).map(r => ({id: r[0], name: r[1], location: r[2] || ''})).filter(c => c.id && c.name) : null
+    };
   } catch(e) { console.warn('loadLookupsFromGs:', e); }
   return {};
 }
@@ -1547,23 +1555,28 @@ async function loadAllFromGs() {
   const ssId = state.googleSheets.ssId;
   if(!url || !ssId) return null;
   try {
-    const [progRes, schedRes, compRes, catRes] = await Promise.all([
+    const [progRes, schedRes, compRes, commRes, unitRes, secRes, catRes] = await Promise.all([
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'البرامج' }) }),
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الجدول' }) }),
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الجهات' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الجاليات' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الوحدات' }) }),
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'الأقسام' }) }),
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', ssId, sheet: 'التصنيفات' }) })
     ]);
     const programs = await progRes.json();
     const schedules = await schedRes.json();
     const companies = await compRes.json();
-    const categories = await catRes.json();
-    const catData = (categories.ok && categories.rows.length > 1) ? categories.rows.slice(1) : [];
+    const communs = await commRes.json();
+    const unts = await unitRes.json();
+    const secs = await secRes.json();
+    const cats = await catRes.json();
 
     const newState = {
-      communities: catData.map(r => r[1]).filter(Boolean),
-      categories: catData.map(r => r[0]).filter(Boolean),
-      units: catData.map(r => r[2]).filter(Boolean),
-      sections: catData.map(r => r[3]).filter(Boolean),
+      communities: communs.ok ? communs.rows.slice(1).map(r => r[0]).filter(Boolean) : state.communities,
+      categories: cats.ok ? cats.rows.slice(1).map(r => r[0]).filter(Boolean) : state.categories,
+      units: unts.ok ? unts.rows.slice(1).map(r => r[0]).filter(Boolean) : state.units,
+      sections: secs.ok ? secs.rows.slice(1).map(r => r[0]).filter(Boolean) : state.sections,
       companies: companies.ok ? companies.rows.slice(1).map(r => ({id: r[0]||uid(), name: r[1]||'', location: r[2]||''})).filter(c => c.name) : state.companies,
       programs: [],
       schedules: [],
