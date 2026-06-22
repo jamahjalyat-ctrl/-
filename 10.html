@@ -249,7 +249,7 @@ th{background:#f7faff;color:#334155;font-weight:800}
     <div class="grid-2"><div class="card"><h3>البرامج القادمة في الشهر المختار</h3><div id="upcomingList" class="list-box"></div></div><div class="card"><h3>حالة الربط بـ Google Sheets</h3><div id="dashGsStatus" class="gs-status-bar disconnected"><div class="gs-dot orange"></div><span>غير متصل بعد</span></div></div></div>
   </section>
   <section id="programs" class="page">
-    <div class="card"><h3>تعريف برنامج جديد</h3><p class="subtext">عرّف البرنامج واحتياجاته هنا، ثم سكّنه في الجدول.</p><div class="grid-2"><div><label>اسم البرنامج</label><input id="progName"/></div><div><label>تصنيف البرنامج</label><select id="progCategory"></select></div></div><div><label>الفكرة التنفيذية / ملخص البرنامج</label><textarea id="progIdea"></textarea></div><div class="card" style="background:#fbfdff;margin-top:14px;"><h3>الاحتياجات</h3><div class="need-row"><div><label>اسم الاحتياج</label><input id="needItem"/></div><div><label>النوع</label><select id="needType"><option>مالي</option><option>عيني</option><option>عيني ومالي</option></select></div><div><label>الكمية</label><input id="needQty" type="number" min="1" value="1"/></div><div><label>الوحدة</label><select id="needUnit"></select></div><div><label>السعر (للقطعة/الوحدة)</label><input id="needPrice" type="number" min="0" value="0"/></div><div style="align-self:end"><button class="btn btn-accent" id="addNeedBtn" >إضافة</button></div></div><div id="needsList"></div></div><div class="actions"><button class="btn btn-primary" id="saveProgramBtn" >حفظ البرنامج</button><button class="btn btn-light" id="resetProgramBtn" >تفريغ</button></div></div>
+    <div class="card"><h3>تعريف برنامج جديد</h3><p class="subtext">عرّف البرنامج واحتياجاته هنا، ثم سكّنه في الجدول.</p><div class="grid-2"><div><label>اسم البرنامج</label><input id="progName"/></div><div><label>تصنيف البرنامج</label><select id="progCategory"></select></div></div><div><label>الفكرة التنفيذية / ملخص البرنامج</label><textarea id="progIdea"></textarea></div><div class="grid-2" style="margin-top:12px"><div><label>الجهة / الموقع (افتراضي)</label><select id="progCompany"></select></div><div><label>عدد المستهدفين (افتراضي)</label><input id="progTargetCount" type="number" min="0" value="0"/></div></div><div><label>ملاحظات (افتراضية)</label><input id="progNotes"/></div><div class="card" style="background:#fbfdff;margin-top:14px;"><h3>الاحتياجات</h3><div class="need-row"><div><label>اسم الاحتياج</label><input id="needItem"/></div><div><label>النوع</label><select id="needType"><option>مالي</option><option>عيني</option><option>عيني ومالي</option></select></div><div><label>الكمية</label><input id="needQty" type="number" min="1" value="1"/></div><div><label>الوحدة</label><select id="needUnit"></select></div><div><label>السعر (للقطعة/الوحدة)</label><input id="needPrice" type="number" min="0" value="0"/></div><div style="align-self:end"><button class="btn btn-accent" id="addNeedBtn" >إضافة</button></div></div><div id="needsList"></div></div><div class="actions"><button class="btn btn-primary" id="saveProgramBtn" >حفظ البرنامج</button><button class="btn btn-light" id="resetProgramBtn" >تفريغ</button></div></div>
     <div class="card"><div class="section-title"><h3>📂 استيراد برامج من Excel (مع الاحتياجات)</h3><span class="pill">دفعة واحدة</span></div><p class="subtext">ارفع ملف Excel. الأعمدة المدعومة: اسم البرنامج (إجباري)، الجالية، التاريخ، المكان، الفكرة، المستهدفون، الاحتياج، الكمية، الوحدة، السعر. يتم تجميع الاحتياجات تلقائياً.</p><div class="actions"><label class="btn btn-primary" style="cursor:pointer;" >📎 رفع ملف Excel<input type="file" id="excelUploadInput" accept=".xlsx,.xls,.csv" style="display:none"/></label><button class="btn btn-light" id="downloadTemplateBtn" >📥 تحميل نموذج Excel</button><button class="btn btn-accent" id="gsImportBtn">📥 استيراد من Google Sheets</button></div><div id="importPreviewArea" style="margin-top:16px; display:none;"><div class="section-title"><span>معاينة البرامج المستوردة</span><span id="importCount" class="pill"></span></div><div class="table-wrap" style="max-height:300px; overflow:auto"><table id="importPreviewTable"><thead><tr><th>البرنامج</th><th>الجالية</th><th>التاريخ</th><th>المكان</th><th>المستهدفون</th><th>عدد الاحتياجات</th><th>الميزانية</th></tr></thead><tbody></tbody></table></div><div class="actions"><button class="btn btn-accent" id="confirmImportBtn" >✅ استيراد البرامج</button><button class="btn btn-light" id="cancelImportBtn">إلغاء</button></div></div></div>
     <div class="card"><div class="section-title"><h3>دليل البرامج</h3><span class="pill" id="programCountPill">0 برنامج</span></div><div class="table-wrap"><table><thead><tr><th>الاسم</th><th>التصنيف</th><th>الميزانية</th><th >إجراءات</th></tr></thead><tbody id="programsTableBody"></tbody></table></div></div>
   </section>
@@ -302,7 +302,7 @@ function handle(d) {
 }
 function initSheets(d) {
   var ss = open(d.ssId);
-  ensure(ss, 'البرامج', ['id', 'الاسم', 'التصنيف', 'الفكرة', 'الميزانية', 'الاحتياجات', 'تاريخ الإنشاء']);
+  ensure(ss, 'البرامج', ['id', 'الاسم', 'التصنيف', 'الفكرة', 'الميزانية', 'الاحتياجات', 'معرف_الجهة', 'المستهدفون', 'ملاحظات', 'تاريخ الإنشاء']);
   ensure(ss, 'الجدول', ['id', 'معرف_البرنامج', 'السنة', 'الشهر', 'اليوم', 'القسم', 'الجالية', 'معرف_الجهة', 'اسم_الجهة', 'المستهدفون', 'المحاضر', 'المنسق', 'الملاحظات', 'تاريخ الإنشاء']);
   ensure(ss, 'الجهات', ['id', 'الاسم', 'الموقع', 'تاريخ الإنشاء']);
   ensure(ss, 'التصنيفات', ['الاسم']);
@@ -484,6 +484,7 @@ const elements = {
   statPrograms: $('statPrograms'), statMonthSchedules: $('statMonthSchedules'), statMonthBudget: $('statMonthBudget'), statTargets: $('statTargets'),
   upcomingList: $('upcomingList'), dashGsStatus: $('dashGsStatus'),
   progName: $('progName'), progCategory: $('progCategory'), progIdea: $('progIdea'),
+  progCompany: $('progCompany'), progTargetCount: $('progTargetCount'), progNotes: $('progNotes'),
   needItem: $('needItem'), needType: $('needType'), needQty: $('needQty'), needUnit: $('needUnit'), needPrice: $('needPrice'),
   needsList: $('needsList'), addNeedBtn: $('addNeedBtn'), saveProgramBtn: $('saveProgramBtn'), resetProgramBtn: $('resetProgramBtn'),
   programsTableBody: $('programsTableBody'), programCountPill: $('programCountPill'),
@@ -550,6 +551,9 @@ function resetProgramForm() {
   currentNeeds = [];
   if(elements.progName) elements.progName.value = '';
   if(elements.progIdea) elements.progIdea.value = '';
+  if(elements.progCompany) elements.progCompany.value = '';
+  if(elements.progTargetCount) elements.progTargetCount.value = '0';
+  if(elements.progNotes) elements.progNotes.value = '';
   renderNeeds();
   if(elements.addNeedBtn) elements.addNeedBtn.textContent = 'إضافة';
   if(elements.saveProgramBtn) elements.saveProgramBtn.textContent = 'حفظ البرنامج';
@@ -570,6 +574,9 @@ window.editProgram = function(id) {
   if(elements.progName) elements.progName.value = p.name;
   if(elements.progCategory) elements.progCategory.value = p.category || '';
   if(elements.progIdea) elements.progIdea.value = p.idea || '';
+  if(elements.progCompany) elements.progCompany.value = p.companyId || '';
+  if(elements.progTargetCount) elements.progTargetCount.value = p.targetCount || 0;
+  if(elements.progNotes) elements.progNotes.value = p.notes || '';
   currentNeeds = (p.needs || []).map(n => ({...n}));
   renderNeeds();
   if(elements.saveProgramBtn) elements.saveProgramBtn.textContent = 'تحديث البرنامج';
@@ -615,6 +622,9 @@ if(elements.saveProgramBtn) elements.saveProgramBtn.addEventListener('click', ()
     name,
     category: elements.progCategory.value,
     idea: elements.progIdea.value.trim(),
+    companyId: elements.progCompany?.value || '',
+    targetCount: parseInt(elements.progTargetCount?.value) || 0,
+    notes: elements.progNotes?.value.trim() || '',
     needs: [...currentNeeds],
     totalCost: totalCost
   };
@@ -713,6 +723,14 @@ if(elements.singleDayBtn) elements.singleDayBtn.addEventListener('click', () => 
 if(elements.repeatDayBtn) elements.repeatDayBtn.addEventListener('click', () => {
   elements.repeatDayBtn.classList.add('active'); elements.singleDayBtn.classList.remove('active');
   elements.repeatDayWrap.style.display = 'block'; elements.singleDayWrap.style.display = 'none';
+});
+if(elements.scheduleProgram) elements.scheduleProgram.addEventListener('change', function() {
+  const p = state.programs.find(x => x.id === this.value);
+  if(p) {
+    if(elements.scheduleCompany && p.companyId) elements.scheduleCompany.value = p.companyId;
+    if(elements.scheduleTargetCount && p.targetCount) elements.scheduleTargetCount.value = p.targetCount;
+    if(elements.scheduleNotes && p.notes) elements.scheduleNotes.value = p.notes;
+  }
 });
 if(elements.saveScheduleBtn) elements.saveScheduleBtn.addEventListener('click', () => {
   const programId = elements.scheduleProgram.value;
@@ -1142,7 +1160,7 @@ async function autoSyncProgramsToGs() {
   const url = state.googleSheets.webAppUrl;
   const ssId = state.googleSheets.ssId;
   if(!url || !ssId) return;
-  const rows = state.programs.map(p => [p.id, p.name || '', p.category || '', p.idea || '', p.totalCost || 0, JSON.stringify(p.needs || []), new Date().toLocaleDateString('ar')]);
+  const rows = state.programs.map(p => [p.id, p.name || '', p.category || '', p.idea || '', p.totalCost || 0, JSON.stringify(p.needs || []), p.companyId || '', p.targetCount || 0, p.notes || '', new Date().toLocaleDateString('ar')]);
   if(!rows.length) return;
   try { await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'save', ssId, sheet: 'البرامج', rows }) }); } catch(e) { console.warn(e); }
 }
@@ -1553,6 +1571,7 @@ function refreshSelectors() {
   elements.scheduleSection.innerHTML = secHtml;
   elements.scheduleCompany.innerHTML = compHtml;
   elements.scheduleProgram.innerHTML = progHtml;
+  if(elements.progCompany) elements.progCompany.innerHTML = '<option value="">اختر</option>' + state.companies.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
   if(elements.reportCommunityFilter) elements.reportCommunityFilter.innerHTML = '<option value="">الكل</option>' + state.communities.map(c => `<option value="${escA(c)}">${esc(c)}</option>`).join('');
   if(elements.reportCompanyFilter) elements.reportCompanyFilter.innerHTML = '<option value="">الكل</option>' + state.companies.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
 }
@@ -1670,7 +1689,7 @@ async function loadAllFromGs() {
 
     if(programs.ok && programs.rows.length > 1) {
       const headers = programs.rows[0];
-      const idxId = 0, idxName = 1, idxCat = 2, idxIdea = 3, idxBudget = 4, idxNeeds = 5;
+      const idxId = 0, idxName = 1, idxCat = 2, idxIdea = 3, idxBudget = 4, idxNeeds = 5, idxComp = 6, idxTarget = 7, idxNotes = 8;
       for(let i = 1; i < programs.rows.length; i++) {
         const r = programs.rows[i];
         if(!r[idxName]) continue;
@@ -1682,6 +1701,9 @@ async function loadAllFromGs() {
           category: r[idxCat] || '',
           idea: r[idxIdea] || '',
           totalCost: parseFloat(r[idxBudget]) || 0,
+          companyId: r[idxComp] || '',
+          targetCount: parseInt(r[idxTarget]) || 0,
+          notes: r[idxNotes] || '',
           needs: needs.map(n => ({
             id: n.id || uid(), item: n.item || n.name || '', type: n.type || 'مالي',
             qty: n.qty || 1, unit: n.unit || '', price: n.price || 0
