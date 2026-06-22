@@ -250,7 +250,7 @@ th{background:#f7faff;color:#334155;font-weight:800}
   </section>
   <section id="programs" class="page">
     <div class="card"><h3>تعريف برنامج جديد</h3><p class="subtext">عرّف البرنامج واحتياجاته هنا، ثم سكّنه في الجدول.</p><div class="grid-2"><div><label>اسم البرنامج</label><input id="progName"/></div><div><label>تصنيف البرنامج</label><select id="progCategory"></select></div></div><div><label>الفكرة التنفيذية / ملخص البرنامج</label><textarea id="progIdea"></textarea></div><div class="card" style="background:#fbfdff;margin-top:14px;"><h3>الاحتياجات</h3><div class="need-row"><div><label>اسم الاحتياج</label><input id="needItem"/></div><div><label>النوع</label><select id="needType"><option>مالي</option><option>عيني</option><option>عيني ومالي</option></select></div><div><label>الكمية</label><input id="needQty" type="number" min="1" value="1"/></div><div><label>الوحدة</label><select id="needUnit"></select></div><div><label>السعر (للقطعة/الوحدة)</label><input id="needPrice" type="number" min="0" value="0"/></div><div style="align-self:end"><button class="btn btn-accent" id="addNeedBtn" >إضافة</button></div></div><div id="needsList"></div></div><div class="actions"><button class="btn btn-primary" id="saveProgramBtn" >حفظ البرنامج</button><button class="btn btn-light" id="resetProgramBtn" >تفريغ</button></div></div>
-    <div class="card"><div class="section-title"><h3>📂 استيراد برامج من Excel (مع الاحتياجات)</h3><span class="pill">دفعة واحدة</span></div><p class="subtext">ارفع ملف Excel. الأعمدة المدعومة: اسم البرنامج (إجباري)، الجالية، التاريخ، المكان، الفكرة، المستهدفون، الاحتياج، الكمية، الوحدة، السعر. يتم تجميع الاحتياجات تلقائياً.</p><div class="actions"><label class="btn btn-primary" style="cursor:pointer;" >📎 رفع ملف Excel<input type="file" id="excelUploadInput" accept=".xlsx,.xls,.csv" style="display:none"/></label><button class="btn btn-light" id="downloadTemplateBtn" >📥 تحميل نموذج Excel</button></div><div id="importPreviewArea" style="margin-top:16px; display:none;"><div class="section-title"><span>معاينة البرامج المستوردة</span><span id="importCount" class="pill"></span></div><div class="table-wrap" style="max-height:300px; overflow:auto"><table id="importPreviewTable"><thead><tr><th>البرنامج</th><th>الجالية</th><th>التاريخ</th><th>المكان</th><th>المستهدفون</th><th>عدد الاحتياجات</th><th>الميزانية</th></tr></thead><tbody></tbody></table></div><div class="actions"><button class="btn btn-accent" id="confirmImportBtn" >✅ استيراد البرامج</button><button class="btn btn-light" id="cancelImportBtn">إلغاء</button></div></div></div>
+    <div class="card"><div class="section-title"><h3>📂 استيراد برامج من Excel (مع الاحتياجات)</h3><span class="pill">دفعة واحدة</span></div><p class="subtext">ارفع ملف Excel. الأعمدة المدعومة: اسم البرنامج (إجباري)، الجالية، التاريخ، المكان، الفكرة، المستهدفون، الاحتياج، الكمية، الوحدة، السعر. يتم تجميع الاحتياجات تلقائياً.</p><div class="actions"><label class="btn btn-primary" style="cursor:pointer;" >📎 رفع ملف Excel<input type="file" id="excelUploadInput" accept=".xlsx,.xls,.csv" style="display:none"/></label><button class="btn btn-light" id="downloadTemplateBtn" >📥 تحميل نموذج Excel</button><button class="btn btn-accent" id="gsImportBtn">📥 استيراد من Google Sheets</button></div><div id="importPreviewArea" style="margin-top:16px; display:none;"><div class="section-title"><span>معاينة البرامج المستوردة</span><span id="importCount" class="pill"></span></div><div class="table-wrap" style="max-height:300px; overflow:auto"><table id="importPreviewTable"><thead><tr><th>البرنامج</th><th>الجالية</th><th>التاريخ</th><th>المكان</th><th>المستهدفون</th><th>عدد الاحتياجات</th><th>الميزانية</th></tr></thead><tbody></tbody></table></div><div class="actions"><button class="btn btn-accent" id="confirmImportBtn" >✅ استيراد البرامج</button><button class="btn btn-light" id="cancelImportBtn">إلغاء</button></div></div></div>
     <div class="card"><div class="section-title"><h3>دليل البرامج</h3><span class="pill" id="programCountPill">0 برنامج</span></div><div class="table-wrap"><table><thead><tr><th>الاسم</th><th>التصنيف</th><th>الميزانية</th><th >إجراءات</th></tr></thead><tbody id="programsTableBody"></tbody></table></div></div>
   </section>
   <section id="schedule" class="page">
@@ -296,6 +296,7 @@ function handle(d) {
     if (action === 'saveReplaced') return saveReplaced(d);
     if (action === 'saveState') return saveState(d);
     if (action === 'loadState') return loadState(d);
+    if (action === 'importUpload') return importUpload(d);
     return out({ ok: false, msg: 'unknown action' });
   } catch (e) { return out({ ok: false, msg: String(e) }); }
 }
@@ -311,6 +312,15 @@ function initSheets(d) {
   ensure(ss, 'المجمع', ['معرف_التسكينة', 'البرنامج', 'تصنيف_البرنامج', 'فكرة_البرنامج', 'ميزانية_البرنامج', 'السنة', 'الشهر', 'اليوم', 'القسم', 'الجالية', 'الجهة', 'موقع_الجهة', 'المستهدفون', 'المحاضر', 'المنسق', 'ملاحظات', 'تاريخ_المزامنة']);
   ensure(ss, 'الإعدادات', ['مفتاح', 'قيمة']);
   ensure(ss, 'البيانات', ['المفتاح', 'القيمة']);
+  var upload = ensure(ss, 'رفع البرامج', ['اسم البرنامج','التصنيف','الجالية','التاريخ','المكان','الفكرة التنفيذية','المستهدفون','القسم','الاحتياج','النوع','الكمية','الوحدة','السعر']);
+  if (upload.getLastRow() <= 1) {
+    upload.appendRow(['مثال: رحلة المدينة','دعوي','الصومالية','27/2/2025','مقر المكتب','زيارة المسجد النبوي',50,'القسم الدعوي','باص','مالي',1,'راكب',1700]);
+  }
+  addDropdown_(ss, 'رفع البرامج', 2, 'التصنيفات!A:A');
+  addDropdown_(ss, 'رفع البرامج', 3, 'الجاليات!A:A');
+  addDropdown_(ss, 'رفع البرامج', 8, 'الأقسام!A:A');
+  addDropdown_(ss, 'رفع البرامج', 12, 'الوحدات!A:A');
+  addDropdown_(ss, 'رفع البرامج', 10, ['مالي','عيني','عيني ومالي']);
   var cfg = ss.getSheetByName('الإعدادات');
   cfg.clearContents();
   cfg.appendRow(['مفتاح', 'قيمة']);
@@ -318,6 +328,18 @@ function initSheets(d) {
   cfg.appendRow(['version', '2.0']);
   seedLookups(ss);
   return out({ ok: true, msg: 'تم إنشاء التبويبات' });
+}
+function addDropdown_(ss, sheetName, col, source) {
+  var sh = ss.getSheetByName(sheetName);
+  if (!sh) return;
+  var range = sh.getRange(2, col, sh.getMaxRows() - 1, 1);
+  var rule = null;
+  if (typeof source === 'string') {
+    rule = SpreadsheetApp.newDataValidation().requireValueInSheet(SpreadsheetApp.getActiveSpreadsheet().getRange(source)).build();
+  } else if (Array.isArray(source)) {
+    rule = SpreadsheetApp.newDataValidation().requireValueInList(source, true).build();
+  }
+  if (rule) range.setDataValidation(rule);
 }
 function saveRows(d) {
   var ss = open(d.ssId);
@@ -356,6 +378,24 @@ function seedLookups(ss) {
   if (units.getLastRow() <= 1) { ['كيلو','كرتون','حبة','علبة','وجبة'].forEach(function(v) { units.appendRow([v]); }); }
   var secs = ensure(ss, 'الأقسام', ['الاسم']);
   if (secs.getLastRow() <= 1) { ['القسم النسائي','القسم الدعوي','قسم الجاليات'].forEach(function(v) { secs.appendRow([v]); }); }
+}
+function importUpload(d) {
+  var ss = open(d.ssId);
+  var sh = ss.getSheetByName('رفع البرامج');
+  if (!sh) return out({ ok: false, msg: 'التبويب غير موجود' });
+  var vals = sh.getDataRange().getValues();
+  if (vals.length < 2) return out({ ok: false, msg: 'لا توجد بيانات' });
+  var headers = vals[0];
+  var rows = [];
+  for (var i = 1; i < vals.length; i++) {
+    var r = vals[i];
+    if (!r[0]) continue;
+    var name = String(r[0] || '').trim();
+    if (!name) continue;
+    var community = String(r[2] || '').trim();
+    rows.push({ row: i, data: { name: name, category: String(r[1]||'').trim(), community: community, date: String(r[3]||'').trim(), location: String(r[4]||'').trim(), idea: String(r[5]||'').trim(), target: parseInt(r[6])||0, section: String(r[7]||'').trim(), need: String(r[8]||'').trim(), needType: String(r[9]||'').trim(), qty: parseFloat(r[10])||1, unit: String(r[11]||'').trim(), price: parseFloat(r[12])||0 } });
+  }
+  return ContentService.createTextOutput(JSON.stringify({ ok: true, count: rows.length, rows: rows })).setMimeType(ContentService.MimeType.JSON);
 }
 function saveState(d) {
   var ss = open(d.ssId);
@@ -471,7 +511,7 @@ const elements = {
   detailsModal: $('detailsModal'), closeModalBtn: $('closeModalBtn'), modalTitle: $('modalTitle'), modalBody: $('modalBody'),
   excelUploadInput: $('excelUploadInput'), downloadTemplateBtn: $('downloadTemplateBtn'),
   importPreviewArea: $('importPreviewArea'), importPreviewTable: $('importPreviewTable'), importCount: $('importCount'),
-  confirmImportBtn: $('confirmImportBtn'), cancelImportBtn: $('cancelImportBtn'),
+  confirmImportBtn: $('confirmImportBtn'), cancelImportBtn: $('cancelImportBtn'), gsImportBtn: $('gsImportBtn'),
   nmYear: $('nmYear'), nmMonth: $('nmMonth'), nmSection: $('nmSection'), nmCommunity: $('nmCommunity'),
   nmCategory: $('nmCategory'), nmNeedType: $('nmNeedType'), nmSearch: $('nmSearch'),
   nmCount: $('nmCount'), nmQtyTotal: $('nmQtyTotal'), nmCostTotal: $('nmCostTotal'), nmProgCount: $('nmProgCount'),
@@ -1215,6 +1255,48 @@ function cancelImport() {
 if(elements.excelUploadInput) elements.excelUploadInput.addEventListener("change", (e) => { if(e.target.files && e.target.files[0]) handleExcelUpload(e.target.files[0]); });
 if(elements.confirmImportBtn) elements.confirmImportBtn.addEventListener("click", confirmImport);
 if(elements.cancelImportBtn) elements.cancelImportBtn.addEventListener("click", cancelImport);
+if(elements.gsImportBtn) elements.gsImportBtn.addEventListener('click', importProgramsFromGs);
+
+async function importProgramsFromGs() {
+  const url = state.googleSheets?.webAppUrl;
+  const ssId = state.googleSheets?.ssId;
+  if(!url || !ssId) return alert('🔗 الربط مع Google Sheets غير مفعل');
+  elements.gsImportBtn.textContent = '⏳ جاري الاستيراد...';
+  elements.gsImportBtn.disabled = true;
+  try {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'importUpload', ssId }) });
+    const data = await res.json();
+    if(!data.ok || !data.rows?.length) { alert('⚠️ لا توجد بيانات في تبويب "رفع البرامج"'); return; }
+    let added = 0, newCats = 0, newComms = 0, newUnits = 0;
+    const grouped = new Map();
+    data.rows.forEach(r => {
+      const d = r.data;
+      if(!grouped.has(d.name)) grouped.set(d.name, []);
+      grouped.get(d.name).push(d);
+    });
+    for(const [name, items] of grouped) {
+      if(state.programs.find(p => p.name === name) && !confirm(`برنامج "${name}" موجود مسبقاً. هل تريد إضافته كنسخة جديدة؟`)) continue;
+      const needs = items.filter(i => i.need).map(i => ({ id: uid(), item: i.need, type: i.needType || 'مالي', qty: i.qty || 1, unit: i.unit || '', price: i.price || 0 }));
+      const first = items[0];
+      const totalCost = needs.reduce((s, n) => s + (n.price * n.qty), 0);
+      state.programs.push({ id: uid(), name, category: first.category || '', idea: first.idea || '', needs, totalCost });
+      if(first.community && !state.communities.includes(first.community)) { state.communities.push(first.community); newComms++; }
+      if(first.category && !state.categories.includes(first.category)) { state.categories.push(first.category); newCats++; }
+      if(first.section && !state.sections.includes(first.section)) state.sections.push(first.section);
+      needs.forEach(n => { if(n.unit && !state.units.includes(n.unit)) { state.units.push(n.unit); newUnits++; } });
+      added++;
+    }
+    persist();
+    refreshAll();
+    elements.gsImportBtn.textContent = '📥 استيراد من Google Sheets';
+    elements.gsImportBtn.disabled = false;
+    let msg = `✅ تم استيراد ${added} برنامج من GS`;
+    if(newCats) msg += `\n➕ تصنيفات جديدة: ${newCats}`;
+    if(newComms) msg += `\n➕ جاليات جديدة: ${newComms}`;
+    if(newUnits) msg += `\n➕ وحدات جديدة: ${newUnits}`;
+    alert(msg);
+  } catch(e) { alert('❌ خطأ: ' + e.toString()); elements.gsImportBtn.textContent = '📥 استيراد من Google Sheets'; elements.gsImportBtn.disabled = false; }
+}
 
 // الطباعة (كما هي)
 let currentPrintTemplate = '';
