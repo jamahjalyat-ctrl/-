@@ -1110,12 +1110,12 @@ async function autoSyncProgramsToGs() {
 // استيراد Excel (مع حساب التكلفة الصحيح)
 let pendingImportedPrograms = [];
 function downloadTemplate() {
-  const wsData = [["اسم البرنامج","الجالية","التاريخ (مثال: 27/2/2025)","المكان","الفكرة التنفيذية","المستهدفون","الاحتياج","النوع","الكمية","الوحدة","السعر"]];
-  wsData.push(["رحلة المدينة","الصومالية","27/2/2025","مقر المكتب","زيارة المسجد النبوي",50,"باص","مالي",1,"راكب",1700]);
-  wsData.push(["رحلة المدينة","الصومالية","27/2/2025","مقر المكتب","",50,"سكن","مالي",50,"يوم",1500]);
-  wsData.push(["رحلة المدينة","الصومالية","27/2/2025","مقر المكتب","",50,"وجبات","عيني",50,"وجبة",1750]);
-  wsData.push(["رحلة المدينة","الصومالية","27/2/2025","مقر المكتب","",50,"ماء","عيني",20,"كرتون",200]);
-  wsData.push(["رحلة المدينة","الصومالية","27/2/2025","مقر المكتب","",50,"جوائز","مالي وعيني",10,"مطوية",200]);
+  const wsData = [["اسم البرنامج","التصنيف","الجالية","التاريخ (مثال: 27/2/2025)","المكان","الفكرة التنفيذية","المستهدفون","الاحتياج","النوع","الكمية","الوحدة","السعر"]];
+  wsData.push(["رحلة المدينة","دعوي","الصومالية","27/2/2025","مقر المكتب","زيارة المسجد النبوي",50,"باص","مالي",1,"راكب",1700]);
+  wsData.push(["رحلة المدينة","دعوي","الصومالية","27/2/2025","مقر المكتب","",50,"سكن","مالي",50,"يوم",1500]);
+  wsData.push(["رحلة المدينة","دعوي","الصومالية","27/2/2025","مقر المكتب","",50,"وجبات","عيني",50,"وجبة",1750]);
+  wsData.push(["رحلة المدينة","دعوي","الصومالية","27/2/2025","مقر المكتب","",50,"ماء","عيني",20,"كرتون",200]);
+  wsData.push(["رحلة المدينة","دعوي","الصومالية","27/2/2025","مقر المكتب","",50,"جوائز","مالي وعيني",10,"مطوية",200]);
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(wsData);
   XLSX.utils.book_append_sheet(wb, ws, "البرامج");
@@ -1143,6 +1143,7 @@ function handleExcelUpload(file) {
     const colUnit = getCol(['الوحدة','unit']);
     const colPrice = getCol(['السعر','price','تكلفة']);
     const colNeedType = getCol(['النوع','type']);
+    const colCategory = getCol(['تصنيف','category','التصنيف']);
     if(colName===-1) { alert("لم يتم العثور على عمود 'اسم البرنامج' في الملف."); return; }
     const map = new Map();
     for(let i=1; i<rows.length; i++) {
@@ -1151,7 +1152,7 @@ function handleExcelUpload(file) {
       let name = row[colName] ? String(row[colName]).trim() : '';
       if(name === '') continue;
       if(!map.has(name)) {
-        map.set(name, { name, community: colCommunity!==-1 ? (row[colCommunity]||'').toString().trim() : '', date: colDate!==-1 ? (row[colDate]||'').toString().trim() : '', location: colLocation!==-1 ? (row[colLocation]||'').toString().trim() : '', idea: colIdea!==-1 ? (row[colIdea]||'').toString().trim() : '', target: colTarget!==-1 ? parseInt(row[colTarget]) || 0 : 0, needs: [] });
+        map.set(name, { name, category: colCategory!==-1 ? (row[colCategory]||'').toString().trim() : '', community: colCommunity!==-1 ? (row[colCommunity]||'').toString().trim() : '', date: colDate!==-1 ? (row[colDate]||'').toString().trim() : '', location: colLocation!==-1 ? (row[colLocation]||'').toString().trim() : '', idea: colIdea!==-1 ? (row[colIdea]||'').toString().trim() : '', target: colTarget!==-1 ? parseInt(row[colTarget]) || 0 : 0, needs: [] });
       }
       const needItem = colNeed!==-1 ? (row[colNeed]||'').toString().trim() : '';
       if(needItem !== '') {
@@ -1164,7 +1165,7 @@ function handleExcelUpload(file) {
     }
     if(map.size === 0) { alert("لا توجد برامج صالحة للاستيراد."); return; }
     pendingImportedPrograms = Array.from(map.values()).map(p => ({
-      name: p.name, community: p.community, date: p.date, location: p.location, idea: p.idea, target: p.target, needs: p.needs,
+      name: p.name, category: p.category, community: p.community, date: p.date, location: p.location, idea: p.idea, target: p.target, needs: p.needs,
       totalCost: p.needs.reduce((sum, n) => sum + (n.price * n.qty), 0)
     }));
     showImportPreview();
@@ -1195,8 +1196,10 @@ function confirmImport() {
     const existing = state.programs.find(p => p.name === pData.name);
     if(existing && !confirm(`برنامج "${pData.name}" موجود مسبقاً. هل تريد إضافته كنسخة جديدة؟`)) continue;
     const needsArr = pData.needs.map(n => ({ id: uid(), item: n.item, type: n.type || 'مالي', qty: n.qty, unit: n.unit, price: n.price }));
-    const newProgram = { id: uid(), name: pData.name, category: '', idea: pData.idea, needs: needsArr, totalCost: pData.totalCost };
+    const newProgram = { id: uid(), name: pData.name, category: pData.category || '', idea: pData.idea || '', needs: needsArr, totalCost: pData.totalCost };
     if(pData.community && !state.communities.includes(pData.community)) state.communities.push(pData.community);
+    if(pData.category && !state.categories.includes(pData.category)) state.categories.push(pData.category);
+    pData.needs.forEach(n => { if(n.unit && !state.units.includes(n.unit)) state.units.push(n.unit); });
     state.programs.push(newProgram);
     added++;
   }
