@@ -1680,6 +1680,15 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     appendLog('🔄 مزامنة احتياطية إلى Google Sheets...');
     autoInitAndSync();
     setInterval(autoInitAndSync, 300000);
+    setInterval(async () => {
+      const lookups = await loadLookupsFromGs();
+      if(lookups.communities?.length) { state.communities = lookups.communities; }
+      if(lookups.categories?.length) { state.categories = lookups.categories; }
+      if(lookups.units?.length) { state.units = lookups.units; }
+      if(lookups.sections?.length) { state.sections = lookups.sections; }
+      if(lookups.companies?.length) { state.companies = lookups.companies; }
+      refreshAll();
+    }, 60000);
   }
 })();
 </script>
