@@ -225,7 +225,22 @@ th{background:#f7faff;color:#334155;font-weight:800}
   .prog-card-row{font-size:12px !important;padding:5px 0 !important}
   .print-shell .btn,.no-print-area{display:none!important}
 }
-/* Login */
+/* Annual plan grid */
+.ap-grid{display:grid;grid-template-columns:80px repeat(5,1fr);gap:3px;font-size:11px;direction:rtl}
+.ap-grid-header{background:#0f172a;color:#fff;padding:6px 4px;text-align:center;font-weight:700;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.ap-grid-label{background:var(--primary-soft);padding:6px 4px;font-weight:700;text-align:center;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;line-height:1.3}
+.ap-grid-label span{font-size:9px;color:var(--muted)}
+.ap-cell{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:3px;min-height:55px;cursor:pointer;transition:box-shadow .15s;overflow:hidden;position:relative}
+.ap-cell:hover{box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.ap-cell-empty{background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;cursor:pointer}
+.ap-cell-item{font-size:9px;line-height:1.3;padding:1px 2px;margin-bottom:1px;border-radius:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+.ap-cell-item:hover{overflow:visible;white-space:normal;z-index:2;background:inherit;padding:2px 4px;box-shadow:0 2px 6px rgba(0,0,0,.15);border-radius:4px}
+.ap-cell-del{position:absolute;top:0;left:0;font-size:8px;cursor:pointer;background:var(--danger);color:#fff;border-radius:50%;width:13px;height:13px;display:none;align-items:center;justify-content:center;line-height:1}
+.ap-cell-item:hover .ap-cell-del{display:flex}
+.ap-cell-item.N{background:#fce7f3;color:#9d174d;font-weight:600}
+.ap-cell-item.D{background:#d1fae5;color:#065f46;font-weight:600}
+.ap-cell-item.J{background:#ede9fe;color:#5b21b6;font-weight:600}
+.ap-cell-more{font-size:8px;color:var(--muted);text-align:center}
 </style>
 </head>
 <body>
@@ -240,6 +255,7 @@ th{background:#f7faff;color:#334155;font-weight:800}
   <button class="nav-btn" data-page="googleSheet" ><span class="nav-icon">🔗</span>الربط مع Google Sheets</button>
   <button class="nav-btn" data-page="settings" ><span class="nav-icon">⚙️</span>التصنيفات الرئيسية</button>
   <button class="nav-btn" data-page="print" ><span class="nav-icon">🖨️</span>الطباعة</button>
+  <button class="nav-btn" data-page="annualPlan" ><span class="nav-icon">🗓️</span>الخطة السنوية</button>
   <div class="side-note">✅ عرض البرامج كنص واضح بألوان الأقسام<br>🌸 القسم النسائي وردي | الدعوي أخضر | الجاليات بنفسجي</div>
 </aside>
 <main class="main">
@@ -304,7 +320,7 @@ function initSheets(d) {
   var ss = open(d.ssId);
   ensure(ss, 'البرامج', ['id', 'الاسم', 'التصنيف', 'الفكرة', 'الميزانية', 'الاحتياجات', 'معرف_الجهة', 'المستهدفون', 'ملاحظات', 'تاريخ الإنشاء']);
   ensure(ss, 'الجدول', ['id', 'معرف_البرنامج', 'السنة', 'الشهر', 'اليوم', 'القسم', 'الجالية', 'معرف_الجهة', 'اسم_الجهة', 'المستهدفون', 'المحاضر', 'المنسق', 'الملاحظات', 'تاريخ الإنشاء']);
-  ensure(ss, 'الجهات', ['id', 'الاسم', 'الموقع', 'تاريخ الإنشاء']);
+  ensure(ss, 'الجهات', ['id', 'الاسم', 'الموقع', 'عدد_المستهدفين', 'تاريخ الإنشاء']);
   ensure(ss, 'التصنيفات', ['الاسم']);
   ensure(ss, 'الجاليات', ['الاسم']);
   ensure(ss, 'الوحدات', ['الاسم']);
@@ -426,8 +442,9 @@ function out(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 </div><button class="copy-btn" onclick="copyAppsScript()">📋 نسخ الكود</button></div><h3 style="margin-top:18px">الخطوة 3 — أدخل رابط Web App وتهيئة الربط</h3><label>رابط Web App (من Apps Script ← نشر ← تطبيق ويب)</label><input id="gsWebAppUrl" placeholder="https://script.google.com/macros/s/..." value="https://script.google.com/macros/s/AKfycbyMW7yXgQeWZFrWB_19g6-GH3cpARSriTe-YLg0p2O9nVXadQU3SxrIbXkrFhdIJs_K/exec"/><label>اسم الشيت (اختياري)</label><input id="gsSheetName" value="الجدول"/><div class="actions"><button class="btn btn-gs" id="initGsBtn">🔧 تهيئة وربط</button><button class="btn btn-light" id="testGsBtn">📡 اختبار الاتصال</button><button class="btn btn-accent" id="syncGsBtn">🔄 مزامنة الآن</button></div><div id="syncLogCard" style="display:none"><h4>سجل المزامنة</h4><div id="syncLog" class="sync-log"></div></div></div></section>
-  <section id="settings" class="page"><div class="grid-4"><div class="card"><h3>الجاليات</h3><label>إضافة جالية</label><input id="communityInput"/><div class="actions"><button class="btn btn-primary" id="addCommunityBtn" >إضافة</button></div><div class="list-box" id="communitiesList"></div></div><div class="card"><h3>تصنيفات البرامج</h3><label>إضافة تصنيف</label><input id="categoryInput"/><div class="actions"><button class="btn btn-primary" id="addCategoryBtn" >إضافة</button></div><div class="list-box" id="categoriesList"></div></div><div class="card"><h3>وحدات القياس</h3><label>إضافة وحدة</label><input id="unitInput"/><div class="actions"><button class="btn btn-primary" id="addUnitBtn" >إضافة</button></div><div class="list-box" id="unitsList"></div></div><div class="card"><h3>الأقسام</h3><label>إضافة قسم</label><input id="sectionInput"/><div class="actions"><button class="btn btn-primary" id="addSectionBtn" >إضافة</button></div><div class="list-box" id="sectionsList"></div></div></div><div class="grid-2"><div class="card"><h3>الجهات / المواقع</h3><div class="grid-2"><div><label>اسم الجهة</label><input id="companyNameInput"/></div><div><label>الموقع</label><input id="companyLocationInput"/></div></div><div class="actions"><button class="btn btn-primary" id="addCompanyBtn" >إضافة</button></div><div class="list-box" id="companiesList"></div></div><div class="card"><h3>نسخ البيانات</h3><div class="actions"><button class="btn btn-accent" id="exportBtn" >📤 تصدير</button><label class="btn btn-light" style="display:inline-flex;align-items:center;justify-content:center;cursor:pointer;" >📥 استيراد<input id="importInput" type="file" accept=".json" style="display:none"/></label><button class="btn btn-danger" id="resetDbBtn" >🗑️ مسح الكل</button></div></div></div></section>
+  <section id="settings" class="page"><div class="grid-4"><div class="card"><h3>الجاليات</h3><label>إضافة جالية</label><input id="communityInput"/><div class="actions"><button class="btn btn-primary" id="addCommunityBtn" >إضافة</button></div><div class="list-box" id="communitiesList"></div></div><div class="card"><h3>تصنيفات البرامج</h3><label>إضافة تصنيف</label><input id="categoryInput"/><div class="actions"><button class="btn btn-primary" id="addCategoryBtn" >إضافة</button></div><div class="list-box" id="categoriesList"></div></div><div class="card"><h3>وحدات القياس</h3><label>إضافة وحدة</label><input id="unitInput"/><div class="actions"><button class="btn btn-primary" id="addUnitBtn" >إضافة</button></div><div class="list-box" id="unitsList"></div></div><div class="card"><h3>الأقسام</h3><label>إضافة قسم</label><input id="sectionInput"/><div class="actions"><button class="btn btn-primary" id="addSectionBtn" >إضافة</button></div><div class="list-box" id="sectionsList"></div></div></div><div class="grid-2"><div class="card"><h3>الجهات / المواقع</h3><div class="grid-3"><div><label>اسم الجهة</label><input id="companyNameInput"/></div><div><label>الموقع</label><input id="companyLocationInput"/></div><div><label>عدد المستهدفين في الموقع</label><input id="companyTargetInput" type="number" min="0" value="0"/></div></div><div class="actions"><button class="btn btn-primary" id="addCompanyBtn" >إضافة</button></div><div class="list-box" id="companiesList"></div></div><div class="card"><h3>نسخ البيانات</h3><div class="actions"><button class="btn btn-accent" id="exportBtn" >📤 تصدير</button><label class="btn btn-light" style="display:inline-flex;align-items:center;justify-content:center;cursor:pointer;" >📥 استيراد<input id="importInput" type="file" accept=".json" style="display:none"/></label><button class="btn btn-danger" id="resetDbBtn" >🗑️ مسح الكل</button></div></div></div></section>
   <section id="print" class="page"><div class="hero"><h2>🖨️ الطباعة والتقارير الإدارية</h2><p>اختر القالب المناسب للطباعة.</p></div><div class="card no-print-area"><div class="print-filter-row"><div><label>الشهر الميلادي</label><select id="printMonthSelect"></select></div><div><label>القسم</label><select id="printSectionFilter"></select></div><div><label>الجالية</label><select id="printCommunityFilter"></select></div></div><div class="print-toolbar"><button class="btn btn-primary" id="btnPrintList">📋 قائمة البرامج</button><button class="btn btn-accent" id="btnPrintCards">🎴 بطاقات البرامج</button><button class="btn btn-light" id="btnPrintSummary">📊 ملخص الإدارة</button><button class="btn btn-light" id="btnPrintClear">🗑️ مسح</button><button class="btn btn-light" id="btnResetExcluded" style="display:none">↩️ إعادة الكل</button><button class="btn" style="background:#0f172a;color:#fff;margin-right:auto" id="btnPrintNow">🖨️ طباعة</button></div></div><div id="printArea" class="print-area"></div></section>
+<section id="annualPlan" class="page"><div class="hero"><h2>🗓️ الخطة السنوية</h2><p>عرض وإدخال البرامج على شبكة 12 شهر × 5 أسابيع، حسب الجالية.</p></div><div class="card"><div class="grid-4"><div><label>السنة</label><select id="apYear"></select></div><div><label>الجالية</label><select id="apCommunity"><option value="">الكل</option></select></div></div></div><div id="apFormCard" class="card" style="display:none"><h3 id="apFormTitle">إضافة برنامج</h3><div class="grid-4"><div><label>اليوم</label><select id="apDay"></select></div><div><label>البرنامج</label><select id="apProgram"></select></div><div><label>الجهة / الموقع</label><select id="apCompany"></select></div><div><label>القسم</label><select id="apSection"></select></div></div><div class="grid-4"><div><label>الجالية</label><select id="apCommunitySelect"></select></div><div><label>المستهدفون</label><input id="apTargetCount" type="number" min="0" value="0"/></div><div><label>المحاضر</label><input id="apLecturer"/></div><div><label>المنسق</label><input id="apCoordinator"/></div></div><div><label>ملاحظات</label><input id="apNotes"/></div><div class="actions"><button class="btn btn-primary" id="apSaveBtn">تسكين</button><button class="btn btn-light" id="apCancelBtn">إلغاء</button></div></div>    <div class="card"><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn btn-light switch-btn active" id="apViewGregBtn" style="font-size:13px">📅 ميلادي</button><button class="btn btn-light switch-btn" id="apViewHijriBtn" style="font-size:13px">🌙 هجري</button><span style="margin-right:auto"></span><label style="font-size:12px;display:flex;align-items:center;gap:4px">حجم الخط <input id="apFontSize" type="number" min="6" max="30" value="11" style="width:50px;padding:2px 4px;border:1px solid var(--line);border-radius:4px;font-size:13px"/></label></div><div id="apGrid" class="ap-grid"></div></div></section>
 </main>
 </div>
 <div id="detailsModal" class="modal"><div class="modal-content"><div class="modal-head"><h3 id="modalTitle"></h3><button class="close-btn" id="closeModalBtn">إغلاق</button></div><div id="modalBody"></div></div></div>
@@ -437,13 +454,14 @@ function out(obj) {
 const STORAGE_KEY = 'mpManager_v9_clean_text';
 const MONTHS_AR = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const WEEK_DAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const HIJRI_MONTHS = ['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
 
 let state = loadState() || {
   communities: ['الفلبينية','البنغالية','الأوردية','الصومالية'],
   categories: ['دعوي','ثقافي','رياضي','اجتماعي'],
   units: ['كيلو','كرتون','حبة','علبة','وجبة'],
   sections: ['القسم النسائي','القسم الدعوي','قسم الجاليات'],
-  companies: [{id: uid(), name: 'إسكان العمالة', location: 'جنوب جدة'}, {id: uid(), name: 'المركز الدعوي', location: 'جدة'}],
+  companies: [{id: uid(), name: 'إسكان العمالة', location: 'جنوب جدة', targetCount: 0}, {id: uid(), name: 'المركز الدعوي', location: 'جدة', targetCount: 0}],
   programs: [],
   schedules: [],
   googleSheets: { webAppUrl: 'https://script.google.com/macros/s/AKfycbyMW7yXgQeWZFrWB_19g6-GH3cpARSriTe-YLg0p2O9nVXadQU3SxrIbXkrFhdIJs_K/exec', ssId: '1_ZW7JDP60cFdTw2RsIBAsQg3oNkkTWTEejRjMOwUk_o', sheetName: 'الجدول', sheetUrl: 'https://docs.google.com/spreadsheets/d/1_ZW7JDP60cFdTw2RsIBAsQg3oNkkTWTEejRjMOwUk_o/edit' },
@@ -456,6 +474,10 @@ let editingNeedId = null;
 let activeMonth = new Date().getMonth();
 let activeYear = new Date().getFullYear();
 let calendarView = 'monthly';
+let apActiveYear = new Date().getFullYear();
+let apActiveMonth = null;
+let apActiveWeek = null;
+let apViewMode = 'gregorian';
 
 // ------------------- دوال مساعدة -------------------
 function uid() { return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
@@ -498,7 +520,7 @@ const elements = {
   searchInput: $('searchInput'), reportRangeFilter: $('reportRangeFilter'), reportCommunityFilter: $('reportCommunityFilter'),
   reportCompanyFilter: $('reportCompanyFilter'), reportTableBody: $('reportTableBody'),
   communityInput: $('communityInput'), categoryInput: $('categoryInput'), unitInput: $('unitInput'), sectionInput: $('sectionInput'),
-  companyNameInput: $('companyNameInput'), companyLocationInput: $('companyLocationInput'),
+  companyNameInput: $('companyNameInput'), companyLocationInput: $('companyLocationInput'), companyTargetInput: $('companyTargetInput'),
   addCommunityBtn: $('addCommunityBtn'), addCategoryBtn: $('addCategoryBtn'), addUnitBtn: $('addUnitBtn'), addSectionBtn: $('addSectionBtn'), addCompanyBtn: $('addCompanyBtn'),
   communitiesList: $('communitiesList'), categoriesList: $('categoriesList'), unitsList: $('unitsList'), sectionsList: $('sectionsList'), companiesList: $('companiesList'),
 
@@ -517,7 +539,15 @@ const elements = {
   nmCategory: $('nmCategory'), nmNeedType: $('nmNeedType'), nmSearch: $('nmSearch'),
   nmCount: $('nmCount'), nmQtyTotal: $('nmQtyTotal'), nmCostTotal: $('nmCostTotal'), nmProgCount: $('nmProgCount'),
   nmTableBody: $('nmTableBody'), nmTableCount: $('nmTableCount'), nmMonthlyBody: $('nmMonthlyBody'), nmRefreshBtn: $('nmRefreshBtn'),
-  main: document.querySelector('.main')
+  main: document.querySelector('.main'),
+  apYear: $('apYear'), apCommunity: $('apCommunity'), apGrid: $('apGrid'),
+  apFormCard: $('apFormCard'), apFormTitle: $('apFormTitle'),
+  apDay: $('apDay'), apProgram: $('apProgram'), apCompany: $('apCompany'), apSection: $('apSection'),
+  apCommunitySelect: $('apCommunitySelect'), apTargetCount: $('apTargetCount'),
+  apLecturer: $('apLecturer'), apCoordinator: $('apCoordinator'), apNotes: $('apNotes'),
+  apSaveBtn: $('apSaveBtn'), apCancelBtn: $('apCancelBtn'),
+  apViewGregBtn: $('apViewGregBtn'), apViewHijriBtn: $('apViewHijriBtn'),
+  apFontSize: $('apFontSize')
 };
 
 // ------------------- دوال البرامج والاحتياجات -------------------
@@ -562,7 +592,7 @@ function renderProgramsTable() {
   if(!elements.programsTableBody) return;
   elements.programsTableBody.innerHTML = state.programs.map(p => {
     const total = (p.totalCost !== undefined) ? p.totalCost : (p.needs || []).reduce((s,n) => s + (n.price * n.qty), 0);
-    const actions = `<td><button class="btn btn-light" onclick="editProgram('${p.id}')">تعديل</button> <button class="btn btn-danger" onclick="deleteProgram('${p.id}')">حذف</button></td>`;
+    const actions = `<td><button class="btn btn-light" onclick="editProgram('${p.id}')">تعديل</button> <button class="btn btn-accent" onclick="duplicateProgram('${p.id}')">تكرار</button> <button class="btn btn-danger" onclick="deleteProgram('${p.id}')">حذف</button></td>`;
     return `<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.category||'-')}</td><td>${fmt(total)} ريال</td>${actions}</tr>`;
   }).join('') || '<tr><td colspan="4">لا توجد برامج</td></tr>';
   if(elements.programCountPill) elements.programCountPill.textContent = state.programs.length + ' برنامج';
@@ -588,6 +618,15 @@ window.deleteProgram = function(id) {
   state.schedules = state.schedules.filter(s => s.programId !== id);
   persist();
   refreshAll();
+};
+window.duplicateProgram = function(id) {
+  const p = state.programs.find(x => x.id === id);
+  if(!p) return;
+  const copy = { ...p, id: uid(), name: 'نسخة من ' + p.name };
+  state.programs.push(copy);
+  persist();
+  refreshAll();
+  editProgram(copy.id);
 };
 if(elements.addNeedBtn) elements.addNeedBtn.addEventListener('click', () => {
   const item = elements.needItem.value.trim();
@@ -963,7 +1002,7 @@ function renderSettings() {
   elements.categoriesList.innerHTML = state.categories.map(c => `<div class="simple-item"><span>${esc(c)}</span><button class="btn btn-danger" onclick="delItem('categories','${encodeURIComponent(c)}')">حذف</button></div>`).join('') || '<div class="muted">لا يوجد</div>';
   elements.unitsList.innerHTML = state.units.map(u => `<div class="simple-item"><span>${esc(u)}</span><button class="btn btn-danger" onclick="delItem('units','${encodeURIComponent(u)}')">حذف</button></div>`).join('') || '<div class="muted">لا يوجد</div>';
   elements.sectionsList.innerHTML = state.sections.map(s => `<div class="simple-item"><span>${esc(s)}</span><button class="btn btn-danger" onclick="delItem('sections','${encodeURIComponent(s)}')">حذف</button></div>`).join('') || '<div class="muted">لا يوجد</div>';
-  elements.companiesList.innerHTML = state.companies.map(c => `<div class="simple-item"><span><strong>${esc(c.name)}</strong><br><span class="muted">${esc(c.location||'')}</span></span><button class="btn btn-danger" onclick="delCompany('${c.id}')">حذف</button></div>`).join('') || '<div class="muted">لا يوجد</div>';
+  elements.companiesList.innerHTML = state.companies.map(c => `<div class="simple-item"><span><strong>${esc(c.name)}</strong><br><span class="muted">${esc(c.location||'')}</span><br><span style="font-size:12px;color:var(--primary);font-weight:700">المستهدفون: ${fmt(c.targetCount||0)}</span></span><button class="btn btn-danger" onclick="delCompany('${c.id}')">حذف</button></div>`).join('') || '<div class="muted">لا يوجد</div>';
 }
 window.delItem = function(key, encoded) {
   const val = decodeURIComponent(encoded);
@@ -971,12 +1010,14 @@ window.delItem = function(key, encoded) {
   state[key] = state[key].filter(x => x !== val);
   persist();
   refreshAll();
+  if(state.googleSheets?.webAppUrl) syncLookupsToGs();
 };
 window.delCompany = function(id) {
   if(!confirm('حذف الجهة؟')) return;
   state.companies = state.companies.filter(c => c.id !== id);
   persist();
   refreshAll();
+  if(state.googleSheets?.webAppUrl) syncLookupsToGs();
 };
 function addListItem(key, inputId) {
   const val = $(inputId).value.trim();
@@ -986,6 +1027,7 @@ function addListItem(key, inputId) {
   $(inputId).value = '';
   persist();
   refreshAll();
+  if(state.googleSheets?.webAppUrl) syncLookupsToGs();
 }
 if(elements.addCommunityBtn) elements.addCommunityBtn.addEventListener('click', () => addListItem('communities', 'communityInput'));
 if(elements.addCategoryBtn) elements.addCategoryBtn.addEventListener('click', () => addListItem('categories', 'categoryInput'));
@@ -994,12 +1036,15 @@ if(elements.addSectionBtn) elements.addSectionBtn.addEventListener('click', () =
 if(elements.addCompanyBtn) elements.addCompanyBtn.addEventListener('click', () => {
   const name = elements.companyNameInput.value.trim();
   const loc = elements.companyLocationInput.value.trim();
+  const target = parseInt(elements.companyTargetInput?.value) || 0;
   if(!name) return alert('اسم الجهة مطلوب');
-  state.companies.push({ id: uid(), name, location: loc });
+  state.companies.push({ id: uid(), name, location: loc, targetCount: target });
   elements.companyNameInput.value = '';
   elements.companyLocationInput.value = '';
+  if(elements.companyTargetInput) elements.companyTargetInput.value = '0';
   persist();
   refreshAll();
+  if(state.googleSheets?.webAppUrl) syncLookupsToGs();
 });
 if(elements.exportBtn) elements.exportBtn.addEventListener('click', () => {
   const a = document.createElement('a');
@@ -1559,6 +1604,9 @@ if(elements.nmRefreshBtn) elements.nmRefreshBtn.addEventListener('click', async 
 // ------------------- تحديث جميع الواجهات -------------------
 function refreshSelectors() {
   if(!elements.progCategory) return;
+  const sel = ['scheduleProgram','scheduleCompany','scheduleCommunity','scheduleSection','progCategory','needUnit','progCompany','reportCommunityFilter','reportCompanyFilter'];
+  const saved = {};
+  sel.forEach(id => { const el = elements[id]; if(el) saved[id] = el.value; });
   const commHtml = '<option value="">اختر</option>' + state.communities.map(c => `<option value="${escA(c)}">${esc(c)}</option>`).join('');
   const catHtml = state.categories.map(c => `<option value="${escA(c)}">${esc(c)}</option>`).join('');
   const unitHtml = state.units.map(u => `<option value="${escA(u)}">${esc(u)}</option>`).join('');
@@ -1574,7 +1622,255 @@ function refreshSelectors() {
   if(elements.progCompany) elements.progCompany.innerHTML = '<option value="">اختر</option>' + state.companies.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
   if(elements.reportCommunityFilter) elements.reportCommunityFilter.innerHTML = '<option value="">الكل</option>' + state.communities.map(c => `<option value="${escA(c)}">${esc(c)}</option>`).join('');
   if(elements.reportCompanyFilter) elements.reportCompanyFilter.innerHTML = '<option value="">الكل</option>' + state.companies.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  sel.forEach(id => { const el = elements[id]; if(el && saved[id]) el.value = saved[id]; });
 }
+// ------------------- الخطة السنوية -------------------
+function populateApYear() {
+  if(!elements.apYear) return;
+  const y = apActiveYear || activeYear;
+  elements.apYear.innerHTML = '';
+  for(let i = y-2; i <= y+2; i++) {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = i;
+    if(i === y) opt.selected = true;
+    elements.apYear.appendChild(opt);
+  }
+}
+function populateApSelectors() {
+  if(!elements.apProgram) return;
+  const sVal = id => { const el = elements[id]; return el ? el.value : ''; };
+  const apSaved = { apProgram: sVal('apProgram'), apCompany: sVal('apCompany'), apSection: sVal('apSection'), apCommunitySelect: sVal('apCommunitySelect'), apCommunity: sVal('apCommunity') };
+  const commHtml = '<option value="">اختر</option>' + state.communities.map(c => `<option value="${escA(c)}">${esc(c)}</option>`).join('');
+  const progHtml = '<option value="">اختر</option>' + state.programs.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  const compHtml = '<option value="">اختر</option>' + state.companies.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  const secHtml = '<option value="">اختر</option>' + state.sections.map(s => `<option value="${escA(s)}">${esc(s)}</option>`).join('');
+  const filterCommHtml = '<option value="">الكل</option>' + state.communities.map(c => `<option value="${escA(c)}">${esc(c)}</option>`).join('');
+  elements.apProgram.innerHTML = progHtml;
+  elements.apCompany.innerHTML = compHtml;
+  elements.apSection.innerHTML = secHtml;
+  elements.apCommunitySelect.innerHTML = commHtml;
+  elements.apCommunity.innerHTML = filterCommHtml;
+  if(elements.apProgram && apSaved.apProgram) elements.apProgram.value = apSaved.apProgram;
+  if(elements.apCompany && apSaved.apCompany) elements.apCompany.value = apSaved.apCompany;
+  if(elements.apSection && apSaved.apSection) elements.apSection.value = apSaved.apSection;
+  if(elements.apCommunitySelect && apSaved.apCommunitySelect) elements.apCommunitySelect.value = apSaved.apCommunitySelect;
+  if(elements.apCommunity && apSaved.apCommunity) elements.apCommunity.value = apSaved.apCommunity;
+}
+function getWeekDays(year, month, weekNum) {
+  const daysInMonth = getDays(year, month);
+  const firstDay = new Date(year, month, 1).getDay();
+  const arabicFirst = (firstDay + 1) % 7;
+  const weeks = [[],[],[],[],[]];
+  let cur = 1;
+  for(let w = 0; w < 5; w++) {
+    if(cur > daysInMonth) break;
+    let end;
+    if(w === 0) {
+      end = Math.min(cur + (6 - arabicFirst), daysInMonth);
+    } else if(w === 4) {
+      end = daysInMonth;
+    } else {
+      end = Math.min(cur + 6, daysInMonth);
+    }
+    for(let d = cur; d <= end; d++) weeks[w].push(d);
+    cur = end + 1;
+  }
+  return weeks[weekNum - 1] || [];
+}
+function formatApDate(s) {
+  const date = new Date(s.year, s.month, s.day);
+  const dayName = WEEK_DAYS[date.getDay()];
+  const gregMonth = MONTHS_AR[s.month];
+  const hijriStr = getHijri(date);
+  const parts = hijriStr.split(' ');
+  const hijriDay = parts[0] || '';
+  const hijriMonth = parts[1] || '';
+  return `${dayName}/${gregMonth}-${s.day}-${hijriDay}/${hijriMonth}`;
+}
+function getHijriMonthName(date) {
+  try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {month:'long'}).format(date); } catch(e) { return ''; }
+}
+function getHijriMonthsInYear(gregYear) {
+  const months = [];
+  let current = [];
+  let prev = '';
+  for(let m = 0; m < 12; m++) {
+    const dim = getDays(gregYear, m);
+    for(let d = 1; d <= dim; d++) {
+      const name = getHijriMonthName(new Date(gregYear, m, d));
+      if(name !== prev && prev !== '') { months.push({ name: prev, days: current }); current = []; }
+      current.push({ day: d, month: m });
+      prev = name;
+    }
+  }
+  if(current.length) months.push({ name: prev, days: current });
+  const full = [];
+  for(const n of HIJRI_MONTHS) {
+    const matched = months.filter(x => x.name === n);
+    const allDays = matched.flatMap(x => x.days);
+    if(allDays.length) full.push({ name: n, days: allDays });
+  }
+  return full;
+}
+function renderAnnualPlan() {
+  if(!elements.apGrid) return;
+  const year = +elements.apYear?.value || apActiveYear || activeYear;
+  apActiveYear = year;
+  populateApSelectors();
+  const community = elements.apCommunity?.value || '';
+  const WEEK_NAMES = ['الأول','الثاني','الثالث','الرابع','الخامس'];
+  const schedules = state.schedules.filter(s => s.year === year && (!community || s.community === community));
+  const isHijri = apViewMode === 'hijri';
+  if(isHijri) {
+    const hijriMonths = getHijriMonthsInYear(year);
+    let html = '<div class="ap-grid-header" style="grid-column:1">الشهر الهجري</div>';
+    for(let w = 1; w <= 5; w++) html += `<div class="ap-grid-header">الأسبوع ${WEEK_NAMES[w-1]}</div>`;
+    for(const hm of hijriMonths) {
+      const mdays = hm.days;
+      const gregRef = mdays[Math.floor(mdays.length/2)];
+      const gregRefDate = new Date(year, gregRef.month, gregRef.day);
+      html += `<div class="ap-grid-label">${hm.name}<span>${getHijri(gregRefDate)}</span></div>`;
+      const total = mdays.length;
+      for(let w = 1; w <= 5; w++) {
+        const startIdx = Math.floor((w-1) * total / 5);
+        const endIdx = w === 5 ? total : Math.floor(w * total / 5);
+        const weekDays = mdays.slice(startIdx, endIdx);
+        const dayItems = schedules.filter(s => weekDays.some(wd => wd.month === s.month && wd.day === s.day));
+        const mainMonth = weekDays.length ? weekDays[Math.floor(weekDays.length/2)].month : 0;
+        const daysList = weekDays.map(wd => wd.day).join(',');
+        if(weekDays.length === 0) {
+          html += `<div class="ap-cell" style="background:#eef1f5;opacity:0.4;cursor:default"></div>`;
+        } else if(dayItems.length === 0) {
+          html += `<div class="ap-cell ap-cell-empty" onclick="openApFormHijri(${mainMonth},'${daysList}')">+</div>`;
+        } else {
+          let cellHtml = '';
+          dayItems.forEach((s) => {
+            const p = state.programs.find(x => x.id === s.programId);
+            const pName = p ? p.name : '?';
+            const section = s.section || '';
+            const cls = section.includes('نسائي') ? 'N' : section.includes('دعوي') ? 'D' : 'J';
+            const dateStr = esc(formatApDate(s));
+            cellHtml += `<div class="ap-cell-item ${cls}" title="${dateStr}: ${pName}">${pName}<span style="font-weight:400;font-size:8px;color:var(--muted)"> - ${esc(s.community||'')}</span><div style="font-size:7px;color:#64748b;line-height:1.2;margin-top:1px">${dateStr}</div><span class="ap-cell-del" onclick="event.stopPropagation();deleteApSchedule('${s.id}')">×</span></div>`;
+          });
+          html += `<div class="ap-cell" onclick="openApFormHijri(${mainMonth},'${daysList}')">${cellHtml}</div>`;
+        }
+      }
+    }
+    elements.apGrid.innerHTML = html;
+  } else {
+    let html = '<div class="ap-grid-header" style="grid-column:1">الشهر</div>';
+    for(let w = 1; w <= 5; w++) html += `<div class="ap-grid-header">الأسبوع ${WEEK_NAMES[w-1]}</div>`;
+    for(let m = 0; m < 12; m++) {
+      const monthName = MONTHS_AR[m];
+      const hijriRef = getHijri(new Date(year, m, 15)).split(' ').slice(0,2).join(' ');
+      html += `<div class="ap-grid-label">${monthName}<span>${hijriRef}</span></div>`;
+      for(let w = 1; w <= 5; w++) {
+        const weekDays = getWeekDays(year, m, w);
+        const dayItems = schedules.filter(s => s.month === m && weekDays.includes(s.day));
+        if(weekDays.length === 0) {
+          html += `<div class="ap-cell" style="background:#eef1f5;opacity:0.4;cursor:default"></div>`;
+        } else if(dayItems.length === 0) {
+          html += `<div class="ap-cell ap-cell-empty" onclick="openApForm(${m},${w})">+</div>`;
+        } else {
+          let cellHtml = '';
+          dayItems.forEach((s) => {
+            const p = state.programs.find(x => x.id === s.programId);
+            const pName = p ? p.name : '?';
+            const section = s.section || '';
+            const cls = section.includes('نسائي') ? 'N' : section.includes('دعوي') ? 'D' : 'J';
+            const dateStr = esc(formatApDate(s));
+            cellHtml += `<div class="ap-cell-item ${cls}" title="${dateStr}: ${pName}">${pName}<span style="font-weight:400;font-size:8px;color:var(--muted)"> - ${esc(s.community||'')}</span><div style="font-size:7px;color:#64748b;line-height:1.2;margin-top:1px">${dateStr}</div><span class="ap-cell-del" onclick="event.stopPropagation();deleteApSchedule('${s.id}')">×</span></div>`;
+          });
+          html += `<div class="ap-cell" onclick="openApForm(${m},${w})">${cellHtml}</div>`;
+        }
+      }
+    }
+    elements.apGrid.innerHTML = html;
+  }
+  applyApFontSize();
+}
+window.openApForm = function(month, weekNum) {
+  apActiveMonth = month;
+  apActiveWeek = weekNum;
+  const year = +elements.apYear.value;
+  const weekDays = getWeekDays(year, month, weekNum);
+  const daysInMonth = getDays(year, month);
+  elements.apDay.innerHTML = weekDays.map(d => { const dt = new Date(year, month, d); return `<option value="${d}">${WEEK_DAYS[dt.getDay()]} ${d} ${MONTHS_AR[month]} ${year} - ${getHijri(dt)}</option>`; }).join('');
+  const monthName = MONTHS_AR[month];
+  const hijri = getHijri(new Date(year, month, weekDays[0]));
+  elements.apFormTitle.textContent = `إضافة برنامج - الأسبوع ${['الأول','الثاني','الثالث','الرابع','الخامس'][weekNum-1]} من ${monthName} (${hijri})`;
+  populateApSelectors();
+  if(elements.apCommunity.value) elements.apCommunitySelect.value = elements.apCommunity.value;
+  elements.apFormCard.style.display = 'block';
+  elements.apFormCard.scrollIntoView({behavior:'smooth',block:'center'});
+};
+window.openApFormHijri = function(month, daysStr) {
+  const year = +elements.apYear.value;
+  const dayList = daysStr.split(',').map(Number).filter(Boolean);
+  if(!dayList.length) { alert('لا توجد أيام في هذا الأسبوع'); return; }
+  apActiveMonth = month >= 0 ? month : 0;
+  elements.apDay.innerHTML = dayList.map(d => { const dt = new Date(year, apActiveMonth, d); return `<option value="${d}">${WEEK_DAYS[dt.getDay()]} ${d} ${MONTHS_AR[apActiveMonth]} ${year} - ${getHijri(dt)}</option>`; }).join('');
+  elements.apFormTitle.textContent = `إضافة برنامج - أيام ${daysStr.replace(/,/g,'، ')}`;
+  populateApSelectors();
+  if(elements.apCommunity.value) elements.apCommunitySelect.value = elements.apCommunity.value;
+  elements.apFormCard.style.display = 'block';
+  elements.apFormCard.scrollIntoView({behavior:'smooth',block:'center'});
+};
+if(elements.apYear) elements.apYear.addEventListener('change', renderAnnualPlan);
+if(elements.apCommunity) elements.apCommunity.addEventListener('change', renderAnnualPlan);
+if(elements.apViewGregBtn) elements.apViewGregBtn.addEventListener('click', () => { apViewMode = 'gregorian'; elements.apViewGregBtn.classList.add('active'); elements.apViewHijriBtn.classList.remove('active'); renderAnnualPlan(); });
+if(elements.apViewHijriBtn) elements.apViewHijriBtn.addEventListener('click', () => { apViewMode = 'hijri'; elements.apViewHijriBtn.classList.add('active'); elements.apViewGregBtn.classList.remove('active'); renderAnnualPlan(); });
+if(elements.apSaveBtn) elements.apSaveBtn.addEventListener('click', () => {
+  const day = +elements.apDay.value;
+  const programId = elements.apProgram.value;
+  const companyId = elements.apCompany.value;
+  const community = elements.apCommunitySelect.value;
+  const section = elements.apSection.value;
+  if(!programId || !companyId || !community || !section) return alert('أكمل جميع الحقول المطلوبة');
+  const year = +elements.apYear.value;
+  const month = apActiveMonth;
+  state.schedules.push({
+    id: uid(), year, month, day,
+    programId, companyId, community, section,
+    targetCount: +(elements.apTargetCount.value) || 0,
+    lecturer: elements.apLecturer.value.trim(),
+    coordinator: elements.apCoordinator.value.trim(),
+    notes: elements.apNotes.value.trim()
+  });
+  const savedComm = elements.apCommunity?.value || '';
+  persist();
+  renderAnnualPlan();
+  if(savedComm) elements.apCommunity.value = savedComm;
+  renderCalendar();
+  if(state.googleSheets.webAppUrl && state.googleSheets.ssId) autoSyncToGs();
+  elements.apFormCard.style.display = 'none';
+  apActiveMonth = null;
+  apActiveWeek = null;
+});
+if(elements.apCancelBtn) elements.apCancelBtn.addEventListener('click', () => {
+  elements.apFormCard.style.display = 'none';
+  apActiveMonth = null;
+  apActiveWeek = null;
+});
+window.deleteApSchedule = function(id) {
+  if(!confirm('حذف هذا البرنامج من الجدول؟')) return;
+  state.schedules = state.schedules.filter(s => s.id !== id);
+  persist();
+  refreshAll();
+  if(state.googleSheets.webAppUrl && state.googleSheets.ssId) autoSyncToGs();
+};
+function applyApFontSize() {
+  const grid = elements.apGrid;
+  if(!grid || !elements.apFontSize) return;
+  const size = parseInt(elements.apFontSize.value) || 11;
+  elements.apFontSize.value = Math.max(6, Math.min(30, size));
+  const px = Math.max(6, Math.min(30, size));
+  grid.style.setProperty('--ap-font', px + 'px');
+  document.querySelectorAll('.ap-cell, .ap-cell-item, .ap-grid-label').forEach(el => el.style.fontSize = px + 'px');
+  document.querySelectorAll('.ap-cell-item div, .ap-cell-item span').forEach(el => el.style.fontSize = Math.max(5, px-3) + 'px');
+}
+if(elements.apFontSize) elements.apFontSize.addEventListener('change', applyApFontSize);
+// ------------------- دوال التحديث -------------------
 function refreshAll() {
   refreshSelectors();
   renderProgramsTable();
@@ -1584,6 +1880,7 @@ function refreshAll() {
   renderReportTable();
   renderSettings();
   renderNeedsMonitor();
+  renderAnnualPlan();
   if(elements.printMonthSelect && elements.printMonthSelect.children.length === 0) initPrintPage();
   else if(currentPrintTemplate) rerenderPrintTemplate();
 }
@@ -1621,8 +1918,8 @@ async function syncLookupsToGs() {
     await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'الوحدات', headers: ['الاسم'], rows: unitRows }) });
     const secRows = state.sections.map(s => [s]);
     await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'الأقسام', headers: ['الاسم'], rows: secRows }) });
-    const compRows = state.companies.map(c => [c.id, c.name, c.location || '']);
-    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'الجهات', headers: ['id','الاسم','الموقع'], rows: compRows }) });
+    const compRows = state.companies.map(c => [c.id, c.name, c.location || '', c.targetCount || 0]);
+    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveReplaced', ssId, sheet: 'الجهات', headers: ['id','الاسم','الموقع','عدد_المستهدفين'], rows: compRows }) });
   } catch(e) { console.warn('syncLookupsToGs:', e); }
 }
 async function loadLookupsFromGs() {
@@ -1647,7 +1944,7 @@ async function loadLookupsFromGs() {
       units: unit.ok ? unit.rows.slice(1).map(r => r[0]).filter(Boolean) : null,
       sections: sec.ok ? sec.rows.slice(1).map(r => r[0]).filter(Boolean) : null,
       categories: cat.ok ? cat.rows.slice(1).map(r => r[0]).filter(Boolean) : null,
-      companies: comp.ok ? comp.rows.slice(1).map(r => ({id: r[0], name: r[1], location: r[2] || ''})).filter(c => c.id && c.name) : null
+      companies: comp.ok ? comp.rows.slice(1).map(r => ({id: r[0], name: r[1], location: r[2] || '', targetCount: parseInt(r[3]) || 0})).filter(c => c.id && c.name) : null
     };
   } catch(e) { console.warn('loadLookupsFromGs:', e); }
   return {};
@@ -1681,7 +1978,7 @@ async function loadAllFromGs() {
       categories: cats.ok ? cats.rows.slice(1).map(r => r[0]).filter(Boolean) : state.categories,
       units: unts.ok ? unts.rows.slice(1).map(r => r[0]).filter(Boolean) : state.units,
       sections: secs.ok ? secs.rows.slice(1).map(r => r[0]).filter(Boolean) : state.sections,
-      companies: companies.ok ? companies.rows.slice(1).map(r => ({id: r[0]||uid(), name: r[1]||'', location: r[2]||''})).filter(c => c.name) : state.companies,
+      companies: companies.ok ? companies.rows.slice(1).map(r => ({id: r[0]||uid(), name: r[1]||'', location: r[2]||'', targetCount: parseInt(r[3]) || 0})).filter(c => c.name) : state.companies,
       programs: [],
       schedules: [],
       googleSheets: state.googleSheets
@@ -1774,6 +2071,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     if(pageId === 'googleSheet') renderGsPage();
     if(pageId === 'print') initPrintPage();
     if(pageId === 'needsMonitor') { initNeedsMonitorFilters(); renderNeedsMonitor(); }
+    if(pageId === 'annualPlan') { populateApYear(); renderAnnualPlan(); }
   });
 });
 // بدء التطبيق — ما يقرأ من GS تلقائياً، فقط يدوي
@@ -1781,6 +2079,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
   populateScheduleYearMonth();
   buildMonthBar();
   initNeedsMonitorFilters();
+  populateApYear();
   refreshAll();
   initPrintPage();
   if(state.googleSheets?.webAppUrl && state.googleSheets?.ssId) {
@@ -1789,11 +2088,11 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     setInterval(autoInitAndSync, 300000);
     setInterval(async () => {
       const lookups = await loadLookupsFromGs();
-      if(lookups.communities?.length) { state.communities = lookups.communities; }
-      if(lookups.categories?.length) { state.categories = lookups.categories; }
-      if(lookups.units?.length) { state.units = lookups.units; }
-      if(lookups.sections?.length) { state.sections = lookups.sections; }
-      if(lookups.companies?.length) { state.companies = lookups.companies; }
+      if(lookups.communities?.length) { lookups.communities.forEach(c => { if(!state.communities.includes(c)) state.communities.push(c); }); }
+      if(lookups.categories?.length) { lookups.categories.forEach(c => { if(!state.categories.includes(c)) state.categories.push(c); }); }
+      if(lookups.units?.length) { lookups.units.forEach(u => { if(!state.units.includes(u)) state.units.push(u); }); }
+      if(lookups.sections?.length) { lookups.sections.forEach(s => { if(!state.sections.includes(s)) state.sections.push(s); }); }
+      if(lookups.companies?.length) { lookups.companies.forEach(gc => { if(!state.companies.find(c => c.id === gc.id)) state.companies.push(gc); }); }
       refreshAll();
     }, 60000);
   }
