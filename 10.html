@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
@@ -266,7 +266,7 @@ th{background:#f7faff;color:#334155;font-weight:800}
   </section>
   <section id="programs" class="page">
     <div class="card"><h3>تعريف برنامج جديد</h3><p class="subtext">عرّف البرنامج واحتياجاته هنا، ثم سكّنه في الجدول.</p><div class="grid-2"><div><label>اسم البرنامج</label><input id="progName"/></div><div><label>تصنيف البرنامج</label><select id="progCategory"></select></div></div><div><label>الفكرة التنفيذية / ملخص البرنامج</label><textarea id="progIdea"></textarea></div><div class="grid-2" style="margin-top:12px"><div><label>الجهة / الموقع (افتراضي)</label><select id="progCompany"></select></div><div><label>عدد المستهدفين (افتراضي)</label><input id="progTargetCount" type="number" min="0" value="0"/></div></div><div><label>ملاحظات (افتراضية)</label><input id="progNotes"/></div><div class="card" style="background:#fbfdff;margin-top:14px;"><h3>الاحتياجات</h3><div class="need-row"><div><label>اسم الاحتياج</label><input id="needItem"/></div><div><label>النوع</label><select id="needType"><option>مالي</option><option>عيني</option><option>عيني ومالي</option></select></div><div><label>الكمية</label><input id="needQty" type="number" min="1" value="1"/></div><div><label>الوحدة</label><select id="needUnit"></select></div><div><label>السعر (للقطعة/الوحدة)</label><input id="needPrice" type="number" min="0" value="0"/></div><div style="align-self:end"><button class="btn btn-accent" id="addNeedBtn" >إضافة</button></div></div><div id="needsList"></div></div><div class="actions"><button class="btn btn-primary" id="saveProgramBtn" >حفظ البرنامج</button><button class="btn btn-light" id="resetProgramBtn" >تفريغ</button></div></div>
-    <div class="card"><div class="section-title"><h3>📂 استيراد برامج من Excel (مع الاحتياجات)</h3><span class="pill">دفعة واحدة</span></div><p class="subtext">ارفع ملف Excel. الأعمدة المدعومة: اسم البرنامج (إجباري)، الجالية، التاريخ، المكان، الفكرة، المستهدفون، الاحتياج، الكمية، الوحدة، السعر. يتم تجميع الاحتياجات تلقائياً.</p><div class="actions"><label class="btn btn-primary" style="cursor:pointer;" >📎 رفع ملف Excel<input type="file" id="excelUploadInput" accept=".xlsx,.xls,.csv" style="display:none"/></label><button class="btn btn-light" id="downloadTemplateBtn" >📥 تحميل نموذج Excel</button><button class="btn btn-accent" id="gsImportBtn">📥 استيراد من Google Sheets</button></div><div id="importPreviewArea" style="margin-top:16px; display:none;"><div class="section-title"><span>معاينة البرامج المستوردة</span><span id="importCount" class="pill"></span></div><div class="table-wrap" style="max-height:300px; overflow:auto"><table id="importPreviewTable"><thead><tr><th>البرنامج</th><th>الجالية</th><th>التاريخ</th><th>المكان</th><th>المستهدفون</th><th>عدد الاحتياجات</th><th>الميزانية</th></tr></thead><tbody></tbody></table></div><div class="actions"><button class="btn btn-accent" id="confirmImportBtn" >✅ استيراد البرامج</button><button class="btn btn-light" id="cancelImportBtn">إلغاء</button></div></div></div>
+    <div class="card"><div class="section-title"><h3>📂 استيراد برامج من Excel (مع الاحتياجات)</h3><span class="pill">دفعة واحدة</span></div><p class="subtext">ارفع ملف Excel. الأعمدة المدعومة: اسم البرنامج (إجباري)، الجالية، التاريخ، المكان، الفكرة، المستهدفون، الاحتياج، الكمية، الوحدة، السعر. يتم تجميع الاحتياجات تلقائياً.</p><div class="actions"><label class="btn btn-primary" style="cursor:pointer;" >📎 رفع ملف Excel<input type="file" id="excelUploadInput" accept=".xlsx,.xls,.csv" style="display:none"/></label><button class="btn btn-light" id="downloadTemplateBtn" >📥 تحميل نموذج Excel</button>        <button class="btn btn-accent" id="gsImportBtn">📥 استيراد من Google Sheets</button><button class="btn btn-light" id="exportDataBtn">📤 تصدير البرامج والجدول</button><label class="btn btn-light" style="cursor:pointer">📥 استيراد برامج وجدول<input type="file" id="importDataInput" accept=".json" style="display:none"/></label></div><div id="importPreviewArea" style="margin-top:16px; display:none;"><div class="section-title"><span>معاينة البرامج المستوردة</span><span id="importCount" class="pill"></span></div><div class="table-wrap" style="max-height:300px; overflow:auto"><table id="importPreviewTable"><thead><tr><th>البرنامج</th><th>الجالية</th><th>التاريخ</th><th>المكان</th><th>المستهدفون</th><th>عدد الاحتياجات</th><th>الميزانية</th></tr></thead><tbody></tbody></table></div><div class="actions"><button class="btn btn-accent" id="confirmImportBtn" >✅ استيراد البرامج</button><button class="btn btn-light" id="cancelImportBtn">إلغاء</button></div></div></div>
     <div class="card"><div class="section-title"><h3>دليل البرامج</h3><span class="pill" id="programCountPill">0 برنامج</span></div><div class="table-wrap"><table><thead><tr><th>الاسم</th><th>التصنيف</th><th>الميزانية</th><th >إجراءات</th></tr></thead><tbody id="programsTableBody"></tbody></table></div></div>
   </section>
   <section id="schedule" class="page">
@@ -534,7 +534,7 @@ const elements = {
   detailsModal: $('detailsModal'), closeModalBtn: $('closeModalBtn'), modalTitle: $('modalTitle'), modalBody: $('modalBody'),
   excelUploadInput: $('excelUploadInput'), downloadTemplateBtn: $('downloadTemplateBtn'),
   importPreviewArea: $('importPreviewArea'), importPreviewTable: $('importPreviewTable'), importCount: $('importCount'),
-  confirmImportBtn: $('confirmImportBtn'), cancelImportBtn: $('cancelImportBtn'), gsImportBtn: $('gsImportBtn'),
+  confirmImportBtn: $('confirmImportBtn'), cancelImportBtn: $('cancelImportBtn'), gsImportBtn: $('gsImportBtn'), exportDataBtn: $('exportDataBtn'), importDataInput: $('importDataInput'),
   nmYear: $('nmYear'), nmMonth: $('nmMonth'), nmSection: $('nmSection'), nmCommunity: $('nmCommunity'),
   nmCategory: $('nmCategory'), nmNeedType: $('nmNeedType'), nmSearch: $('nmSearch'),
   nmCount: $('nmCount'), nmQtyTotal: $('nmQtyTotal'), nmCostTotal: $('nmCostTotal'), nmProgCount: $('nmProgCount'),
@@ -1052,6 +1052,34 @@ if(elements.exportBtn) elements.exportBtn.addEventListener('click', () => {
   a.download = `backup_${new Date().toISOString().slice(0,19)}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
+});
+if(elements.exportDataBtn) elements.exportDataBtn.addEventListener('click', () => {
+  const data = { programs: state.programs, schedules: state.schedules, companies: state.companies };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
+  a.download = `برامج_وجداول_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+if(elements.importDataInput) elements.importDataInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if(!imported.programs) throw new Error();
+      const before = state.programs.length + state.schedules.length;
+      imported.programs.forEach(p => { if(!state.programs.find(x => x.id === p.id)) state.programs.push(p); });
+      (imported.schedules || []).forEach(s => { if(!state.schedules.find(x => x.id === s.id)) state.schedules.push(s); });
+      (imported.companies || []).forEach(c => { if(!state.companies.find(x => x.id === c.id)) state.companies.push(c); });
+      persist();
+      refreshAll();
+      alert(`تم استيراد ${state.programs.length + state.schedules.length - before} عنصر جديد`);
+    } catch(err) { alert('الملف غير صالح - تأكد أنه ملف تصدير البرامج والجدول'); }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
 });
 if(elements.importInput) elements.importInput.addEventListener('change', e => {
   const file = e.target.files[0];
