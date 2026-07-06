@@ -2102,16 +2102,19 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     if(pageId === 'annualPlan') { populateApYear(); renderAnnualPlan(); }
   });
 });
-// بدء التطبيق — ما يقرأ من GS تلقائياً، فقط يدوي
+// بدء التطبيق — يحمل من GS تلقائياً للمزامنة بين الأجهزة
 (async function initApp() {
-  populateScheduleYearMonth();
-  buildMonthBar();
-  initNeedsMonitorFilters();
-  populateApYear();
-  refreshAll();
-  initPrintPage();
   if(state.googleSheets?.webAppUrl && state.googleSheets?.ssId) {
-    appendLog('🔄 مزامنة احتياطية إلى Google Sheets...');
+    try {
+      const gsFull = await loadStateFromGs();
+      if(gsFull && gsFull.programs && gsFull.programs.length) {
+        const savedGs = state.googleSheets;
+        state = gsFull;
+        state.googleSheets = savedGs;
+        persist();
+        appendLog(`✅ تم تحميل ${state.programs.length} برنامج و ${state.schedules.length} جدول من Google Sheets`);
+      }
+    } catch(e) { console.warn('init load GS:', e); }
     autoInitAndSync();
     setInterval(autoInitAndSync, 300000);
     setInterval(async () => {
@@ -2124,6 +2127,12 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
       refreshAll();
     }, 60000);
   }
+  populateScheduleYearMonth();
+  buildMonthBar();
+  initNeedsMonitorFilters();
+  populateApYear();
+  refreshAll();
+  initPrintPage();
 })();
 </script>
 </body>
