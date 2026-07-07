@@ -351,7 +351,7 @@ function addDropdown_(ss, sheetName, col, source) {
   var range = sh.getRange(2, col, sh.getMaxRows() - 1, 1);
   var rule = null;
   if (typeof source === 'string') {
-    rule = SpreadsheetApp.newDataValidation().requireValueInSheet(SpreadsheetApp.getActiveSpreadsheet().getRange(source)).build();
+    rule = SpreadsheetApp.newDataValidation().requireValueInRange(SpreadsheetApp.getActiveSpreadsheet().getRange(source), true).build();
   } else if (Array.isArray(source)) {
     rule = SpreadsheetApp.newDataValidation().requireValueInList(source, true).build();
   }
