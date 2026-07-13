@@ -241,6 +241,9 @@ th{background:#f7faff;color:#334155;font-weight:800}
 .ap-cell-item.D{background:#d1fae5;color:#065f46;font-weight:600}
 .ap-cell-item.J{background:#ede9fe;color:#5b21b6;font-weight:600}
 .ap-cell-more{font-size:8px;color:var(--muted);text-align:center}
+.note-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:.1s;background:#fff}
+.note-item:hover{background:var(--primary-soft);border-color:#c7d9ff}
+.note-item span:first-child{flex:1;font-weight:700;font-size:13px}
 </style>
 </head>
 <body>
@@ -446,7 +449,7 @@ function out(obj) {
   <section id="settings" class="page"><div class="grid-4"><div class="card"><h3>الجاليات</h3><label>إضافة جالية</label><input id="communityInput"/><div class="actions"><button class="btn btn-primary" id="addCommunityBtn" >إضافة</button></div><div class="list-box" id="communitiesList"></div></div><div class="card"><h3>تصنيفات البرامج</h3><label>إضافة تصنيف</label><input id="categoryInput"/><div class="actions"><button class="btn btn-primary" id="addCategoryBtn" >إضافة</button></div><div class="list-box" id="categoriesList"></div></div><div class="card"><h3>وحدات القياس</h3><label>إضافة وحدة</label><input id="unitInput"/><div class="actions"><button class="btn btn-primary" id="addUnitBtn" >إضافة</button></div><div class="list-box" id="unitsList"></div></div><div class="card"><h3>الأقسام</h3><label>إضافة قسم</label><input id="sectionInput"/><div class="actions"><button class="btn btn-primary" id="addSectionBtn" >إضافة</button></div><div class="list-box" id="sectionsList"></div></div></div><div class="grid-2"><div class="card"><h3>الجهات / المواقع</h3><div class="grid-3"><div><label>اسم الجهة</label><input id="companyNameInput"/></div><div><label>الموقع</label><input id="companyLocationInput"/></div><div><label>عدد المستهدفين في الموقع</label><input id="companyTargetInput" type="number" min="0" value="0"/></div></div><div class="actions"><button class="btn btn-primary" id="addCompanyBtn" >إضافة</button></div><div class="list-box" id="companiesList"></div></div><div class="card"><h3>نسخ البيانات</h3><div class="actions"><button class="btn btn-accent" id="exportBtn" >📤 تصدير</button><label class="btn btn-light" style="display:inline-flex;align-items:center;justify-content:center;cursor:pointer;" >📥 استيراد<input id="importInput" type="file" accept=".json" style="display:none"/></label><button class="btn btn-danger" id="resetDbBtn" >🗑️ مسح الكل</button></div></div></div></section>
   <section id="print" class="page"><div class="hero"><h2>🖨️ الطباعة والتقارير الإدارية</h2><p>اختر القالب المناسب للطباعة.</p></div><div class="card no-print-area"><div class="print-filter-row"><div><label>الشهر الميلادي</label><select id="printMonthSelect"></select></div><div><label>القسم</label><select id="printSectionFilter"></select></div><div><label>الجالية</label><select id="printCommunityFilter"></select></div></div><div class="print-toolbar"><button class="btn btn-primary" id="btnPrintList">📋 قائمة البرامج</button><button class="btn btn-accent" id="btnPrintCards">🎴 بطاقات البرامج</button><button class="btn btn-light" id="btnPrintSummary">📊 ملخص الإدارة</button><button class="btn btn-light" id="btnPrintClear">🗑️ مسح</button><button class="btn btn-light" id="btnResetExcluded" style="display:none">↩️ إعادة الكل</button><button class="btn" style="background:#0f172a;color:#fff;margin-right:auto" id="btnPrintNow">🖨️ طباعة</button></div></div><div id="printArea" class="print-area"></div></section>
 <section id="annualPlan" class="page"><div class="hero"><h2>🗓️ الخطة السنوية</h2><p>عرض وإدخال البرامج على شبكة 12 شهر × 5 أسابيع، حسب الجالية.</p></div><div class="card"><div class="grid-4"><div><label>السنة</label><select id="apYear"></select></div><div><label>الجالية</label><select id="apCommunity"><option value="">الكل</option></select></div></div></div><div id="apFormCard" class="card" style="display:none"><h3 id="apFormTitle">إضافة برنامج</h3><div class="grid-4"><div><label>اليوم</label><select id="apDay"></select></div><div><label>البرنامج</label><select id="apProgram"></select></div><div><label>الجهة / الموقع</label><select id="apCompany"></select></div><div><label>القسم</label><select id="apSection"></select></div></div><div class="grid-4"><div><label>الجالية</label><select id="apCommunitySelect"></select></div><div><label>المستهدفون</label><input id="apTargetCount" type="number" min="0" value="0"/></div><div><label>المحاضر</label><input id="apLecturer"/></div><div><label>المنسق</label><input id="apCoordinator"/></div></div><div><label>ملاحظات</label><input id="apNotes"/></div><div class="actions"><button class="btn btn-primary" id="apSaveBtn">تسكين</button><button class="btn btn-light" id="apCancelBtn">إلغاء</button></div></div>    <div class="card"><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn btn-light switch-btn active" id="apViewGregBtn" style="font-size:13px">📅 ميلادي</button><button class="btn btn-light switch-btn" id="apViewHijriBtn" style="font-size:13px">🌙 هجري</button><span style="margin-right:auto"></span><label style="font-size:12px;display:flex;align-items:center;gap:4px">حجم الخط <input id="apFontSize" type="number" min="6" max="30" value="11" style="width:50px;padding:2px 4px;border:1px solid var(--line);border-radius:4px;font-size:13px"/></label></div><div id="apGrid" class="ap-grid"></div></div></section>
-<section id="notes" class="page"><div class="hero"><h2>📝 الملاحظات</h2><p>مساحة حرة لكتابة الملاحظات — تُحفظ تلقائياً وتُزامن مع Google Sheets.</p></div><div class="card"><textarea id="notesEditor" style="min-height:400px;width:100%;border:1px solid var(--line);border-radius:13px;padding:16px;font:inherit;font-size:15px;line-height:2;resize:vertical;background:#fff" placeholder="اكتب ملاحظاتك هنا..."></textarea><div style="margin-top:8px;font-size:12px;color:var(--muted)"><span id="notesStatus">✅ محفوظ</span> — <span id="notesCharCount">0</span> حرف</div></div></section>
+<section id="notes" class="page"><div class="hero"><h2>📝 المذكرات</h2><p>إدارة المذكرات مع حماية بكلمة سر لكل مذكرة.</p></div><div class="card"><div style="display:flex;gap:10px;align-items:end"><div style="flex:1"><label>عنوان المذكرة الجديدة</label><input id="noteNewTitle" placeholder="أدخل عنوان المذكرة"/></div><button class="btn btn-primary" id="noteAddBtn">➕ إضافة</button></div></div><div class="card"><div class="section-title"><h3>📋 قائمة المذكرات</h3><span class="pill" id="noteCountPill">0</span></div><div id="notesList" class="list-box" style="max-height:300px"></div></div><div class="card" id="noteEditorCard" style="display:none"><h3 id="noteEditorTitle">✏️ تحرير المذكرة</h3><div><label>العنوان</label><input id="noteEditTitle"/></div><div style="margin-top:12px"><label>المحتوى</label><textarea id="noteEditContent" style="min-height:300px"></textarea></div><div style="margin-top:12px"><label>🔒 كلمة سر (اختياري)</label><input id="notePassword" type="password" placeholder="اترك فارغاً لإزالة الحماية"/></div><div style="margin-top:8px;display:flex;gap:8px;align-items:center"><button class="btn btn-accent" id="noteSaveBtn">💾 حفظ</button><button class="btn btn-light" id="noteCloseBtn">إغلاق</button><span style="font-size:12px;color:var(--muted)" id="noteEditStatus"></span></div></div></section>
 </main>
 </div>
 <div id="detailsModal" class="modal"><div class="modal-content"><div class="modal-head"><h3 id="modalTitle"></h3><button class="close-btn" id="closeModalBtn">إغلاق</button></div><div id="modalBody"></div></div></div>
@@ -466,10 +469,14 @@ let state = loadState() || {
   companies: [{id: uid(), name: 'إسكان العمالة', location: 'جنوب جدة', targetCount: 0}, {id: uid(), name: 'المركز الدعوي', location: 'جدة', targetCount: 0}],
   programs: [],
   schedules: [],
-  notes: '',
+  notes: [],
   googleSheets: { webAppUrl: 'https://script.google.com/macros/s/AKfycbyMW7yXgQeWZFrWB_19g6-GH3cpARSriTe-YLg0p2O9nVXadQU3SxrIbXkrFhdIJs_K/exec', ssId: '1_ZW7JDP60cFdTw2RsIBAsQg3oNkkTWTEejRjMOwUk_o', sheetName: 'الجدول', sheetUrl: 'https://docs.google.com/spreadsheets/d/1_ZW7JDP60cFdTw2RsIBAsQg3oNkkTWTEejRjMOwUk_o/edit' },
 };
 
+if(typeof state.notes === 'string') {
+  state.notes = state.notes ? [{ id: uid(), title: 'ملاحظاتي', content: state.notes, password: '', updatedAt: Date.now() }] : [];
+}
+let selectedNoteId = null;
 let currentNeeds = [];
 let editProgramId = null;
 let editScheduleId = null;
@@ -550,7 +557,10 @@ const elements = {
   apLecturer: $('apLecturer'), apCoordinator: $('apCoordinator'), apNotes: $('apNotes'),
   apSaveBtn: $('apSaveBtn'), apCancelBtn: $('apCancelBtn'),
   apViewGregBtn: $('apViewGregBtn'), apViewHijriBtn: $('apViewHijriBtn'),
-  notesEditor: $('notesEditor'), notesStatus: $('notesStatus'), notesCharCount: $('notesCharCount'),
+  noteNewTitle: $('noteNewTitle'), noteAddBtn: $('noteAddBtn'), notesList: $('notesList'), noteCountPill: $('noteCountPill'),
+  noteEditorCard: $('noteEditorCard'), noteEditorTitle: $('noteEditorTitle'), noteEditTitle: $('noteEditTitle'),
+  noteEditContent: $('noteEditContent'), notePassword: $('notePassword'), noteSaveBtn: $('noteSaveBtn'),
+  noteCloseBtn: $('noteCloseBtn'), noteEditStatus: $('noteEditStatus'),
   apFontSize: $('apFontSize')
 };
 
@@ -2104,20 +2114,72 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     if(pageId === 'print') initPrintPage();
     if(pageId === 'needsMonitor') { initNeedsMonitorFilters(); renderNeedsMonitor(); }
     if(pageId === 'annualPlan') { populateApYear(); renderAnnualPlan(); }
-    if(pageId === 'notes') { if(elements.notesEditor) elements.notesEditor.value = state.notes || ''; updateNotesStatus(); }
+    if(pageId === 'notes') renderNotesList();
   });
 });
-let notesTimer = null;
-if(elements.notesEditor) elements.notesEditor.addEventListener('input', () => {
-  state.notes = elements.notesEditor.value;
-  if(elements.notesCharCount) elements.notesCharCount.textContent = state.notes.length;
-  if(elements.notesStatus) elements.notesStatus.textContent = '🔄 جاري الحفظ...';
-  clearTimeout(notesTimer);
-  notesTimer = setTimeout(() => { persist(); if(elements.notesStatus) elements.notesStatus.textContent = '✅ محفوظ'; }, 1000);
-});
-function updateNotesStatus() {
-  if(elements.notesCharCount) elements.notesCharCount.textContent = (state.notes || '').length;
+// ------------------- المذكرات -------------------
+function renderNotesList() {
+  if(!elements.notesList) return;
+  const arr = state.notes || [];
+  elements.notesList.innerHTML = arr.length ? arr.map(n => {
+    const locked = n.password ? '🔒 ' : '📄 ';
+    const date = new Date(n.updatedAt || Date.now()).toLocaleDateString('ar-SA');
+    return `<div class="note-item" onclick="openNote('${n.id}')"><span>${locked}${esc(n.title||'بدون عنوان')}</span><span style="font-size:11px;color:var(--muted)">${date}</span><button class="btn btn-danger" style="padding:2px 8px;font-size:11px" onclick="event.stopPropagation();deleteNote('${n.id}')">🗑️</button></div>`;
+  }).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">لا توجد مذكرات بعد</div>';
+  if(elements.noteCountPill) elements.noteCountPill.textContent = arr.length + ' مذكرة';
 }
+window.openNote = function(id) {
+  const n = state.notes.find(x => x.id === id);
+  if(!n) return;
+  if(n.password) {
+    const pwd = prompt('🔒 هذه المذكرة محمية بكلمة سر. أدخل كلمة السر:');
+    if(pwd !== n.password) { alert('❌ كلمة سر خاطئة'); return; }
+  }
+  selectedNoteId = id;
+  if(elements.noteEditTitle) elements.noteEditTitle.value = n.title || '';
+  if(elements.noteEditContent) elements.noteEditContent.value = n.content || '';
+  if(elements.notePassword) elements.notePassword.value = n.password || '';
+  if(elements.noteEditorCard) elements.noteEditorCard.style.display = 'block';
+  if(elements.noteEditorTitle) elements.noteEditorTitle.textContent = '✏️ ' + (n.title || 'تحرير المذكرة');
+  if(elements.noteEditStatus) elements.noteEditStatus.textContent = '';
+};
+window.closeNote = function() {
+  selectedNoteId = null;
+  if(elements.noteEditorCard) elements.noteEditorCard.style.display = 'none';
+};
+window.saveNote = function() {
+  if(!selectedNoteId) return;
+  const n = state.notes.find(x => x.id === selectedNoteId);
+  if(!n) return;
+  n.title = elements.noteEditTitle?.value?.trim() || 'بدون عنوان';
+  n.content = elements.noteEditContent?.value || '';
+  n.password = elements.notePassword?.value || '';
+  n.updatedAt = Date.now();
+  persist();
+  renderNotesList();
+  if(elements.noteEditStatus) elements.noteEditStatus.textContent = '✅ تم الحفظ';
+  if(elements.noteEditorTitle) elements.noteEditorTitle.textContent = '✏️ ' + n.title;
+};
+window.deleteNote = function(id) {
+  if(!confirm('حذف هذه المذكرة؟')) return;
+  state.notes = state.notes.filter(x => x.id !== id);
+  if(selectedNoteId === id) closeNote();
+  persist();
+  renderNotesList();
+};
+function addNote() {
+  const title = elements.noteNewTitle?.value?.trim();
+  if(!title) return alert('أدخل عنوان المذكرة');
+  state.notes.push({ id: uid(), title, content: '', password: '', updatedAt: Date.now() });
+  elements.noteNewTitle.value = '';
+  persist();
+  renderNotesList();
+  openNote(state.notes[state.notes.length - 1].id);
+}
+if(elements.noteAddBtn) elements.noteAddBtn.addEventListener('click', addNote);
+if(elements.noteSaveBtn) elements.noteSaveBtn.addEventListener('click', saveNote);
+if(elements.noteCloseBtn) elements.noteCloseBtn.addEventListener('click', closeNote);
+if(elements.noteNewTitle) elements.noteNewTitle.addEventListener('keydown', e => { if(e.key === 'Enter') addNote(); });
 // بدء التطبيق — يحمل من GS تلقائياً للمزامنة بين الأجهزة
 (async function initApp() {
   if(state.googleSheets?.webAppUrl && state.googleSheets?.ssId) {
