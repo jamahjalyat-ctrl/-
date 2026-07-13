@@ -170,11 +170,14 @@ GS قاعدة بيانات حقيقية
 - إعادة نشر كود Apps Script بعد الإصلاح
 - تحديث رابط Web App في التطبيق المحلي والموقع
 
-التعديل 23: إضافة تبويب الملاحظات مع حفظ تلقائي
-------------------------------------------------
-- إضافة زر "📝 الملاحظات" في الشريط الجانبي
-- إضافة صفحة notes مع textarea كبير
-- إضافة notes: '' في state الافتراضي
-- إضافة notesEditor, notesStatus, notesCharCount في elements
-- حفظ تلقائي بعد 1 ثانية من التوقف عن الكتابة عبر persist()
-- عرض عدد الأحرف وحالة الحفظ
+التعديل 23: ترقية الملاحظات إلى نظام مذكرات متكامل
+-----------------------------------------------------
+- إضافة زر "📝 المذكرات" في الشريط الجانبي
+- إضافة notes: [] في state الافتراضي
+- تحويل البيانات القديمة (notes: string) تلقائياً إلى المصفوفة الجديدة
+- إضافة notesList, noteEditorCard مع editable title, content, password
+- دوال: renderNotesList, openNote, closeNote, saveNote, deleteNote, addNote
+- كل مذكرة: id, title, content, password, updatedAt
+- قفل 🔒 للمذكرات المحمية بكلمة سر (prompt قبل الفتح)
+- حفظ تلقائي عبر persist()
+- CSS: .note-item مع hover والتنسيق
