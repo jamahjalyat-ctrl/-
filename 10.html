@@ -2189,6 +2189,7 @@ if(elements.noteNewTitle) elements.noteNewTitle.addEventListener('keydown', e =>
         const savedGs = state.googleSheets;
         state = gsFull;
         state.googleSheets = savedGs;
+        if(typeof state.notes === 'string') { state.notes = state.notes ? [{ id: uid(), title: 'ملاحظاتي', content: state.notes, password: '', updatedAt: Date.now() }] : []; }
         persist();
         appendLog(`✅ تم تحميل ${state.programs.length} برنامج و ${state.schedules.length} جدول من Google Sheets`);
       }
